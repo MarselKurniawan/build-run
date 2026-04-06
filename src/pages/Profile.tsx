@@ -298,7 +298,7 @@ const Profile = () => {
       <BankAccountDialog open={bankDialogOpen} onOpenChange={setBankDialogOpen} onSuccess={refreshProfile} />
       <CompanyProfileDialog open={companyDialogOpen} onOpenChange={setCompanyDialogOpen} />
       <RechargeDialog open={rechargeOpen} onOpenChange={setRechargeOpen} onSuccess={refreshProfile} />
-      <WithdrawDialog open={withdrawOpen} onOpenChange={setWithdrawOpen} onSuccess={refreshProfile} />
+      <WithdrawDialog open={withdrawOpen} onOpenChange={setWithdrawOpen} balance={profile.balance} onSuccess={refreshProfile} />
     </div>
   );
 };
