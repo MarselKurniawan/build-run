@@ -106,8 +106,8 @@ const Statistics = () => {
     <div className="space-y-6 p-4 pt-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-heading font-bold text-foreground mb-1">Statistik</h1>
-        <p className="text-sm text-muted-foreground">Analisis performa investasi Anda</p>
+        <h1 className="text-lg font-heading font-bold text-foreground mb-1">Statistik</h1>
+        <p className="text-[11px] text-muted-foreground">Analisis performa investasi Anda</p>
       </div>
 
       {/* Summary Cards */}
@@ -118,7 +118,7 @@ const Statistics = () => {
               <Wallet className="w-4 h-4 text-primary" />
               <p className="text-xs text-muted-foreground">Total Investasi</p>
             </div>
-            <p className="text-xl font-bold text-foreground">{formatCurrency(totalInvested)}</p>
+            <p className="text-sm font-bold text-foreground">{formatCurrency(totalInvested)}</p>
           </CardContent>
         </Card>
 
@@ -128,7 +128,7 @@ const Statistics = () => {
               <TrendingUp className="w-4 h-4 text-success" />
               <p className="text-xs text-muted-foreground">Total Pendapatan</p>
             </div>
-            <p className="text-xl font-bold text-success">{formatCurrency(profile?.total_income || 0)}</p>
+            <p className="text-sm font-bold text-success">{formatCurrency(profile?.total_income || 0)}</p>
           </CardContent>
         </Card>
 
@@ -138,7 +138,7 @@ const Statistics = () => {
               <ArrowUpRight className="w-4 h-4 text-success" />
               <p className="text-xs text-muted-foreground">Income Harian</p>
             </div>
-            <p className="text-xl font-bold text-foreground">{formatCurrency(totalDailyIncome)}</p>
+            <p className="text-sm font-bold text-foreground">{formatCurrency(totalDailyIncome)}</p>
           </CardContent>
         </Card>
 
@@ -148,7 +148,7 @@ const Statistics = () => {
               <Activity className="w-4 h-4 text-accent" />
               <p className="text-xs text-muted-foreground">Komisi Referral</p>
             </div>
-            <p className="text-xl font-bold text-accent">{formatCurrency(profile?.team_income || 0)}</p>
+            <p className="text-sm font-bold text-accent">{formatCurrency(profile?.team_income || 0)}</p>
           </CardContent>
         </Card>
       </div>

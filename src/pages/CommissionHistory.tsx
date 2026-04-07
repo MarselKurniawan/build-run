@@ -84,8 +84,8 @@ const CommissionHistory = () => {
           <ArrowLeft className="w-5 h-5" />
         </Button>
         <div>
-          <h1 className="text-xl font-heading font-bold text-foreground">Riwayat Komisi & Rabat</h1>
-          <p className="text-sm text-muted-foreground">Detail penghasilan dari tim Anda</p>
+          <h1 className="text-base font-heading font-bold text-foreground">Riwayat Komisi & Rabat</h1>
+          <p className="text-[11px] text-muted-foreground">Detail penghasilan dari tim Anda</p>
         </div>
       </div>
 
@@ -97,7 +97,7 @@ const CommissionHistory = () => {
               <Users className="w-4 h-4 text-success" />
               <p className="text-xs font-medium text-muted-foreground">Total Komisi</p>
             </div>
-            <p className="text-xl font-bold text-success">{formatCurrency(profile?.team_income || totalCommission)}</p>
+            <p className="text-sm font-bold text-success">{formatCurrency(profile?.team_income || totalCommission)}</p>
             <p className="text-xs text-muted-foreground mt-1">{commissionTransactions.length} transaksi</p>
           </CardContent>
         </Card>
@@ -108,7 +108,7 @@ const CommissionHistory = () => {
               <Percent className="w-4 h-4 text-accent" />
               <p className="text-xs font-medium text-muted-foreground">Total Rabat</p>
             </div>
-            <p className="text-xl font-bold text-accent">{formatCurrency(profile?.rabat_income || totalRabat)}</p>
+            <p className="text-sm font-bold text-accent">{formatCurrency(profile?.rabat_income || totalRabat)}</p>
             <p className="text-xs text-muted-foreground mt-1">{rabatTransactions.length} transaksi</p>
           </CardContent>
         </Card>

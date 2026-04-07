@@ -154,13 +154,13 @@ const Home = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-heading font-bold text-foreground">
+          <h1 className="text-lg font-heading font-bold text-foreground">
             {profile ? `Halo, ${profile.name}!` : "Selamat Datang!"}
           </h1>
-          <p className="text-sm text-muted-foreground">Kelola investasi Anda dengan mudah</p>
+          <p className="text-[11px] text-muted-foreground">Kelola investasi Anda dengan mudah</p>
         </div>
         <div className="flex items-center gap-1">
-          <Badge variant="vip" className="text-sm px-3 py-1">
+          <Badge variant="vip" className="text-[10px] px-2 py-0.5">
             VIP {vipLevel}
           </Badge>
           <Button variant="ghost" size="icon" onClick={toggleTheme} className="hover:bg-muted">
@@ -184,9 +184,9 @@ const Home = () => {
         <CardContent className="p-4 sm:p-6">
           <div className="flex items-center gap-2 mb-3">
             <Wallet className="w-5 h-5 text-primary" />
-            <span className="text-sm text-muted-foreground font-medium">Saldo Tersedia</span>
+            <span className="text-[11px] text-muted-foreground font-medium">Saldo Tersedia</span>
           </div>
-          <p className="text-2xl sm:text-3xl font-heading font-bold text-primary mb-4 truncate">
+          <p className="text-xl font-heading font-bold text-primary mb-3 break-all">
             {formatCurrency(balance)}
           </p>
 
@@ -222,8 +222,8 @@ const Home = () => {
               <CalendarCheck className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm sm:text-base font-semibold text-foreground">Check-in Harian</p>
-              <p className="text-xs sm:text-sm text-muted-foreground">Absen setiap hari, dapat hadiah!</p>
+              <p className="text-xs font-semibold text-foreground">Check-in Harian</p>
+              <p className="text-[10px] text-muted-foreground">Absen setiap hari, dapat hadiah!</p>
             </div>
             <Button size="sm" variant="default" className="shrink-0 text-xs" onClick={(e) => { e.stopPropagation(); setCheckinOpen(true); }}>
               Check-in
@@ -246,14 +246,14 @@ const Home = () => {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5 mb-0.5">
                   <Bell className="w-3 h-3 text-success" />
-                  <p className="text-sm sm:text-base font-semibold text-foreground">Klaim Hari Ini</p>
-                </div>
-                <p className="text-xs sm:text-sm text-muted-foreground">
-                  {claimableInvestments.length} investasi siap diklaim
+                   <p className="text-xs font-semibold text-foreground">Klaim Hari Ini</p>
+                 </div>
+                 <p className="text-[10px] text-muted-foreground">
+                   {claimableInvestments.length} investasi siap diklaim
                 </p>
               </div>
               <div className="text-right shrink-0">
-                <p className="text-sm sm:text-lg font-bold text-success truncate max-w-[100px] sm:max-w-none">
+                <p className="text-xs font-bold text-success truncate max-w-[100px] sm:max-w-none">
                   +{formatCurrency(totalClaimable)}
                 </p>
                 <Button 
@@ -279,12 +279,12 @@ const Home = () => {
           <CardContent className="p-4">
             <div className="flex items-center justify-between gap-2">
               <div className="min-w-0">
-                <p className="text-xs sm:text-sm text-muted-foreground">Investasi Aktif</p>
-                <p className="text-base sm:text-lg font-bold text-foreground">{activeInvestments.length} Paket</p>
+                <p className="text-[10px] text-muted-foreground">Investasi Aktif</p>
+                <p className="text-sm font-bold text-foreground">{activeInvestments.length} Paket</p>
               </div>
               <div className="text-right min-w-0">
-                <p className="text-xs sm:text-sm text-muted-foreground">Income Harian</p>
-                <p className="text-base sm:text-lg font-bold text-success truncate">
+                <p className="text-[10px] text-muted-foreground">Income Harian</p>
+                <p className="text-sm font-bold text-success break-all">
                   {formatCurrency(totalDailyIncome)}
                 </p>
               </div>
@@ -296,7 +296,7 @@ const Home = () => {
       {/* Popular Products */}
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-heading font-bold text-foreground flex items-center gap-2">
+          <h2 className="text-sm font-heading font-bold text-foreground flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-vip-gold" />
             Produk Populer
           </h2>
@@ -345,18 +345,18 @@ const Home = () => {
               <CardContent className="p-4">
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <h3 className="font-semibold text-foreground mb-1">{product.name}</h3>
-                    <p className="text-xs text-muted-foreground">{product.description}</p>
+                    <h3 className="font-semibold text-xs text-foreground mb-1">{product.name}</h3>
+                    <p className="text-[10px] text-muted-foreground">{product.description}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm text-muted-foreground">Harga</p>
+                    <p className="text-[10px] text-muted-foreground">Harga</p>
                     {product.promo_price ? (
                       <div>
-                        <p className="text-xs text-muted-foreground line-through">{formatCurrency(product.price)}</p>
-                        <p className="text-lg font-bold text-destructive">{formatCurrency(product.promo_price)}</p>
+                        <p className="text-[10px] text-muted-foreground line-through">{formatCurrency(product.price)}</p>
+                        <p className="text-sm font-bold text-destructive">{formatCurrency(product.promo_price)}</p>
                       </div>
                     ) : (
-                      <p className="text-lg font-bold text-primary">{formatCurrency(product.price)}</p>
+                      <p className="text-sm font-bold text-primary">{formatCurrency(product.price)}</p>
                     )}
                   </div>
                 </div>

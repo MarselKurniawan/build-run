@@ -179,13 +179,13 @@ const Account = () => {
 
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-heading font-bold text-foreground mb-1">Akun Saya</h1>
-        <p className="text-sm text-muted-foreground">Monitor aktivitas dan performa Anda</p>
+        <h1 className="text-lg font-heading font-bold text-foreground mb-1">Akun Saya</h1>
+        <p className="text-[11px] text-muted-foreground">Monitor aktivitas dan performa Anda</p>
       </div>
 
       {/* Monitoring Dashboard */}
       <div>
-        <h2 className="text-lg font-heading font-bold text-foreground mb-4">Monitoring</h2>
+        <h2 className="text-sm font-heading font-bold text-foreground mb-3">Monitoring</h2>
         <div className="grid grid-cols-2 gap-3">
           <Card className="shadow-card bg-gradient-to-br from-success/20 to-success/5 border-success/20">
             <CardContent className="p-4">
@@ -193,7 +193,7 @@ const Account = () => {
                 <TrendingUp className="w-4 h-4 text-success" />
                 <p className="text-xs font-medium text-muted-foreground">Total Income</p>
               </div>
-              <p className="text-xl font-bold text-success">{formatCurrency(monitoringData.totalIncome)}</p>
+              <p className="text-sm font-bold text-success">{formatCurrency(monitoringData.totalIncome)}</p>
             </CardContent>
           </Card>
 
@@ -203,7 +203,7 @@ const Account = () => {
                 <ArrowUpRight className="w-4 h-4 text-success" />
                 <p className="text-xs font-medium text-muted-foreground">Total Recharge</p>
               </div>
-              <p className="text-xl font-bold text-foreground">
+              <p className="text-sm font-bold text-foreground break-all">
                 {formatCurrency(monitoringData.totalRecharge)}
               </p>
             </CardContent>
@@ -215,7 +215,7 @@ const Account = () => {
                 <ArrowDownRight className="w-4 h-4 text-accent" />
                 <p className="text-xs font-medium text-muted-foreground">Total Withdraw</p>
               </div>
-              <p className="text-xl font-bold text-foreground">
+              <p className="text-sm font-bold text-foreground break-all">
                 {formatCurrency(monitoringData.totalWithdraw)}
               </p>
             </CardContent>
@@ -227,7 +227,7 @@ const Account = () => {
                 <Users className="w-4 h-4 text-primary" />
                 <p className="text-xs font-medium text-muted-foreground">Team Income</p>
               </div>
-              <p className="text-xl font-bold text-primary">{formatCurrency(monitoringData.teamIncome)}</p>
+              <p className="text-sm font-bold text-primary">{formatCurrency(monitoringData.teamIncome)}</p>
             </CardContent>
           </Card>
         </div>
