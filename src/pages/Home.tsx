@@ -246,10 +246,10 @@ const Home = () => {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5 mb-0.5">
                   <Bell className="w-3 h-3 text-success" />
-                  <p className="text-sm sm:text-base font-semibold text-foreground">Klaim Hari Ini</p>
-                </div>
-                <p className="text-xs sm:text-sm text-muted-foreground">
-                  {claimableInvestments.length} investasi siap diklaim
+                   <p className="text-xs font-semibold text-foreground">Klaim Hari Ini</p>
+                 </div>
+                 <p className="text-[10px] text-muted-foreground">
+                   {claimableInvestments.length} investasi siap diklaim
                 </p>
               </div>
               <div className="text-right shrink-0">
