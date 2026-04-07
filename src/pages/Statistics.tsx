@@ -118,7 +118,7 @@ const Statistics = () => {
               <Wallet className="w-4 h-4 text-primary" />
               <p className="text-xs text-muted-foreground">Total Investasi</p>
             </div>
-            <p className="text-xl font-bold text-foreground">{formatCurrency(totalInvested)}</p>
+            <p className="text-sm font-bold text-foreground">{formatCurrency(totalInvested)}</p>
           </CardContent>
         </Card>
 
