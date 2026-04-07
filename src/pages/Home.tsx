@@ -184,9 +184,9 @@ const Home = () => {
         <CardContent className="p-4 sm:p-6">
           <div className="flex items-center gap-2 mb-3">
             <Wallet className="w-5 h-5 text-primary" />
-            <span className="text-sm text-muted-foreground font-medium">Saldo Tersedia</span>
+            <span className="text-[11px] text-muted-foreground font-medium">Saldo Tersedia</span>
           </div>
-          <p className="text-2xl sm:text-3xl font-heading font-bold text-primary mb-4 truncate">
+          <p className="text-xl font-heading font-bold text-primary mb-3 break-all">
             {formatCurrency(balance)}
           </p>
 
