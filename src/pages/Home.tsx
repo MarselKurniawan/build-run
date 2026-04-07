@@ -345,7 +345,7 @@ const Home = () => {
               <CardContent className="p-4">
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <h3 className="font-semibold text-foreground mb-1">{product.name}</h3>
+                    <h3 className="font-semibold text-xs text-foreground mb-1">{product.name}</h3>
                     <p className="text-xs text-muted-foreground">{product.description}</p>
                   </div>
                   <div className="text-right">
