@@ -160,7 +160,7 @@ const Home = () => {
           <p className="text-[11px] text-muted-foreground">Kelola investasi Anda dengan mudah</p>
         </div>
         <div className="flex items-center gap-1">
-          <Badge variant="vip" className="text-sm px-3 py-1">
+          <Badge variant="vip" className="text-[10px] px-2 py-0.5">
             VIP {vipLevel}
           </Badge>
           <Button variant="ghost" size="icon" onClick={toggleTheme} className="hover:bg-muted">
