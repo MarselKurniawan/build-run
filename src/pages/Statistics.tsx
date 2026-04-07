@@ -138,7 +138,7 @@ const Statistics = () => {
               <ArrowUpRight className="w-4 h-4 text-success" />
               <p className="text-xs text-muted-foreground">Income Harian</p>
             </div>
-            <p className="text-xl font-bold text-foreground">{formatCurrency(totalDailyIncome)}</p>
+            <p className="text-sm font-bold text-foreground">{formatCurrency(totalDailyIncome)}</p>
           </CardContent>
         </Card>
 
