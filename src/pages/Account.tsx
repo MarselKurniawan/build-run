@@ -215,7 +215,7 @@ const Account = () => {
                 <ArrowDownRight className="w-4 h-4 text-accent" />
                 <p className="text-xs font-medium text-muted-foreground">Total Withdraw</p>
               </div>
-              <p className="text-xl font-bold text-foreground">
+              <p className="text-sm font-bold text-foreground break-all">
                 {formatCurrency(monitoringData.totalWithdraw)}
               </p>
             </CardContent>
