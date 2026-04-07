@@ -128,7 +128,7 @@ const Statistics = () => {
               <TrendingUp className="w-4 h-4 text-success" />
               <p className="text-xs text-muted-foreground">Total Pendapatan</p>
             </div>
-            <p className="text-xl font-bold text-success">{formatCurrency(profile?.total_income || 0)}</p>
+            <p className="text-sm font-bold text-success">{formatCurrency(profile?.total_income || 0)}</p>
           </CardContent>
         </Card>
 
