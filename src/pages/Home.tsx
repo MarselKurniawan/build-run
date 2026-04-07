@@ -222,8 +222,8 @@ const Home = () => {
               <CalendarCheck className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm sm:text-base font-semibold text-foreground">Check-in Harian</p>
-              <p className="text-xs sm:text-sm text-muted-foreground">Absen setiap hari, dapat hadiah!</p>
+              <p className="text-xs font-semibold text-foreground">Check-in Harian</p>
+              <p className="text-[10px] text-muted-foreground">Absen setiap hari, dapat hadiah!</p>
             </div>
             <Button size="sm" variant="default" className="shrink-0 text-xs" onClick={(e) => { e.stopPropagation(); setCheckinOpen(true); }}>
               Check-in
