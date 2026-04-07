@@ -179,8 +179,8 @@ const Account = () => {
 
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-heading font-bold text-foreground mb-1">Akun Saya</h1>
-        <p className="text-sm text-muted-foreground">Monitor aktivitas dan performa Anda</p>
+        <h1 className="text-lg font-heading font-bold text-foreground mb-1">Akun Saya</h1>
+        <p className="text-[11px] text-muted-foreground">Monitor aktivitas dan performa Anda</p>
       </div>
 
       {/* Monitoring Dashboard */}
