@@ -106,8 +106,8 @@ const Statistics = () => {
     <div className="space-y-6 p-4 pt-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-heading font-bold text-foreground mb-1">Statistik</h1>
-        <p className="text-sm text-muted-foreground">Analisis performa investasi Anda</p>
+        <h1 className="text-lg font-heading font-bold text-foreground mb-1">Statistik</h1>
+        <p className="text-[11px] text-muted-foreground">Analisis performa investasi Anda</p>
       </div>
 
       {/* Summary Cards */}
