@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import {
@@ -38,7 +39,6 @@ import {
   UserPlus,
   DollarSign,
   Clock,
-  List,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import BackupDialog from "@/components/BackupDialog";
@@ -167,266 +167,182 @@ const Admin = () => {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case "success": return <Badge className="bg-success/20 text-success border-success/30">Sukses</Badge>;
-      case "pending": return <Badge variant="outline" className="text-accent border-accent/30">Pending</Badge>;
-      case "rejected": return <Badge variant="destructive">Ditolak</Badge>;
-      default: return <Badge variant="outline">{status}</Badge>;
+      case "success": return <Badge className="bg-success/15 text-success border-0 text-[10px] font-medium">Sukses</Badge>;
+      case "pending": return <Badge className="bg-secondary/15 text-secondary border-0 text-[10px] font-medium">Pending</Badge>;
+      case "rejected": return <Badge className="bg-destructive/15 text-destructive border-0 text-[10px] font-medium">Ditolak</Badge>;
+      default: return <Badge variant="outline" className="text-[10px]">{status}</Badge>;
     }
   };
 
-  return (
-    <div className="space-y-6 p-4 pt-6 pb-24">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="w-6 h-6 text-primary" />
-            <h1 className="text-xl sm:text-2xl font-heading font-bold text-foreground">Admin Panel</h1>
-          </div>
-          <p className="text-sm text-muted-foreground mt-1">Kelola pengguna dan transaksi</p>
+  const getTypeBadge = (type: string) => {
+    const map: Record<string, string> = {
+      withdraw: "bg-destructive/10 text-destructive",
+      recharge: "bg-success/10 text-success",
+      income: "bg-primary/10 text-primary",
+      invest: "bg-secondary/10 text-secondary",
+    };
+    return <Badge className={`${map[type] || "bg-muted text-muted-foreground"} border-0 text-[10px] font-medium capitalize`}>{type}</Badge>;
+  };
+
+  const StatCard = ({ icon: Icon, label, value, color = "text-foreground" }: { icon: any; label: string; value: string | number; color?: string }) => (
+    <Card className="overflow-hidden">
+      <CardContent className="p-3">
+        <p className="text-[10px] text-muted-foreground mb-1">{label}</p>
+        <div className="flex items-center gap-1.5">
+          <Icon className={`w-3.5 h-3.5 shrink-0 ${color}`} />
+          <p className={`text-[10px] sm:text-xs font-bold ${color} whitespace-nowrap`}>{value}</p>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <Button variant="outline" size="sm" onClick={() => setBackupDialogOpen(true)}>
-            <Database className="w-4 h-4 sm:mr-2" />
-            <span className="hidden sm:inline">Backup</span>
+      </CardContent>
+    </Card>
+  );
+
+  const TransactionTable = ({ data, showActions }: { data: PendingTx[]; showActions?: boolean }) => (
+    <div className="rounded-lg border overflow-x-auto">
+      <Table>
+        <TableHeader>
+          <TableRow className="bg-muted/30">
+            <TableHead className="text-[10px] font-semibold w-[140px]">Member</TableHead>
+            <TableHead className="text-[10px] font-semibold w-[70px]">Tipe</TableHead>
+            <TableHead className="text-[10px] font-semibold text-right w-[110px]">Jumlah</TableHead>
+            <TableHead className="text-[10px] font-semibold w-[70px]">Status</TableHead>
+            <TableHead className="text-[10px] font-semibold w-[90px]">Tanggal</TableHead>
+            {showActions && <TableHead className="text-[10px] font-semibold text-center w-[130px]">Aksi</TableHead>}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {data.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={showActions ? 6 : 5} className="text-center py-8 text-muted-foreground text-xs">
+                Tidak ada transaksi
+              </TableCell>
+            </TableRow>
+          ) : (
+            data.map((tx) => (
+              <TableRow key={tx.id} className="hover:bg-muted/20">
+                <TableCell className="py-2">
+                  <p className="text-xs font-medium truncate">{tx.userName}</p>
+                  <p className="text-[10px] text-muted-foreground truncate">{tx.userPhone || tx.userEmail}</p>
+                </TableCell>
+                <TableCell className="py-2">{getTypeBadge(tx.type)}</TableCell>
+                <TableCell className="py-2 text-right">
+                  <span className={`text-xs font-bold ${
+                    tx.type === "recharge" || tx.type === "income" ? "text-success" : 
+                    tx.type === "withdraw" ? "text-destructive" : "text-foreground"
+                  }`}>
+                    {tx.type === "recharge" || tx.type === "income" ? "+" : "-"}{formatCurrency(tx.amount)}
+                  </span>
+                </TableCell>
+                <TableCell className="py-2">{getStatusBadge(tx.status)}</TableCell>
+                <TableCell className="py-2 text-[10px] text-muted-foreground">
+                  {new Date(tx.created_at).toLocaleDateString("id-ID", { day: "2-digit", month: "short" })}
+                </TableCell>
+                {showActions && (
+                  <TableCell className="py-2">
+                    {tx.status === "pending" && (
+                      <div className="flex gap-1 justify-center">
+                        <Button size="sm" className="h-6 px-2 text-[10px] bg-success hover:bg-success/90" onClick={() => handleApprove(tx)} disabled={isLoading === tx.id}>
+                          <CheckCircle className="w-3 h-3 mr-0.5" />OK
+                        </Button>
+                        <Button size="sm" variant="destructive" className="h-6 px-2 text-[10px]" onClick={() => handleReject(tx)} disabled={isLoading === tx.id}>
+                          <XCircle className="w-3 h-3 mr-0.5" />No
+                        </Button>
+                      </div>
+                    )}
+                  </TableCell>
+                )}
+              </TableRow>
+            ))
+          )}
+        </TableBody>
+      </Table>
+    </div>
+  );
+
+  return (
+    <div className="space-y-4 p-4 pt-5 pb-24">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+            <ShieldCheck className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-lg font-heading font-bold text-foreground leading-tight">Dashboard Admin</h1>
+            <p className="text-[10px] text-muted-foreground">Kelola member & transaksi</p>
+          </div>
+        </div>
+        <div className="flex gap-1.5">
+          <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => setBackupDialogOpen(true)} title="Backup">
+            <Database className="w-3.5 h-3.5" />
           </Button>
-          <Button variant="outline" size="sm" onClick={() => setCouponDialogOpen(true)}>
-            <Ticket className="w-4 h-4 sm:mr-2" />
-            <span className="hidden sm:inline">Kupon</span>
+          <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => setCouponDialogOpen(true)} title="Kupon">
+            <Ticket className="w-3.5 h-3.5" />
           </Button>
           <Link to="/admin/products">
-            <Button variant="outline" size="sm">
-              <Package className="w-4 h-4 sm:mr-2" />
-              <span className="hidden sm:inline">Produk</span>
+            <Button variant="outline" size="icon" className="h-8 w-8" title="Produk">
+              <Package className="w-3.5 h-3.5" />
             </Button>
           </Link>
           <Link to="/admin/users">
-            <Button variant="default" size="sm">
-              <UserCog className="w-4 h-4 sm:mr-2" />
-              <span className="hidden sm:inline">Users</span>
+            <Button variant="default" size="icon" className="h-8 w-8" title="Users">
+              <UserCog className="w-3.5 h-3.5" />
             </Button>
           </Link>
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
-        <Card className="min-w-0 overflow-hidden">
-          <CardContent className="p-3 sm:p-4">
-            <div className="flex items-center gap-1.5 mb-1">
-              <Users className="w-4 h-4 shrink-0 text-primary" />
-              <p className="text-[10px] sm:text-xs text-muted-foreground">Total Member</p>
-            </div>
-            <p className="text-lg sm:text-2xl font-bold">{stats.totalUsers}</p>
-          </CardContent>
-        </Card>
-        <Card className="min-w-0 overflow-hidden">
-          <CardContent className="p-3 sm:p-4">
-            <div className="flex items-center gap-1.5 mb-1">
-              <UserPlus className="w-4 h-4 shrink-0 text-muted-foreground" />
-              <p className="text-[10px] sm:text-xs text-muted-foreground">Daftar Saja</p>
-            </div>
-            <p className="text-lg sm:text-2xl font-bold">{stats.membersOnly}</p>
-          </CardContent>
-        </Card>
-        <Card className="min-w-0 overflow-hidden">
-          <CardContent className="p-3 sm:p-4">
-            <div className="flex items-center gap-1.5 mb-1">
-              <DollarSign className="w-4 h-4 shrink-0 text-success" />
-              <p className="text-[10px] sm:text-xs text-muted-foreground">Member Deposit</p>
-            </div>
-            <p className="text-lg sm:text-2xl font-bold text-success">{stats.membersDeposit}</p>
-          </CardContent>
-        </Card>
-        <Card className="min-w-0 overflow-hidden bg-accent/10">
-          <CardContent className="p-3 sm:p-4">
-            <div className="flex items-center gap-1.5 mb-1">
-              <Clock className="w-4 h-4 shrink-0 text-accent" />
-              <p className="text-[10px] sm:text-xs text-muted-foreground">Pending</p>
-            </div>
-            <p className="text-lg sm:text-2xl font-bold text-accent">{stats.pendingCount}</p>
-          </CardContent>
-        </Card>
-        <Card className="min-w-0 overflow-hidden">
-          <CardContent className="p-3 sm:p-4">
-            <div className="flex items-center gap-1.5 mb-1">
-              <Wallet className="w-4 h-4 shrink-0 text-success" />
-              <p className="text-[10px] sm:text-xs text-muted-foreground">Total Balance</p>
-            </div>
-            <p className="text-[10px] sm:text-lg font-bold break-all">{formatCurrency(stats.totalBalance)}</p>
-          </CardContent>
-        </Card>
-        <Card className="min-w-0 overflow-hidden">
-          <CardContent className="p-3 sm:p-4">
-            <div className="flex items-center gap-1.5 mb-1">
-              <TrendingUp className="w-4 h-4 shrink-0 text-primary" />
-              <p className="text-[10px] sm:text-xs text-muted-foreground">Total Income</p>
-            </div>
-            <p className="text-[10px] sm:text-sm font-bold break-all">{formatCurrency(stats.totalIncome)}</p>
-          </CardContent>
-        </Card>
-        <Card className="min-w-0 overflow-hidden">
-          <CardContent className="p-3 sm:p-4">
-            <div className="flex items-center gap-1.5 mb-1">
-              <ArrowUpRight className="w-4 h-4 shrink-0 text-success" />
-              <p className="text-[10px] sm:text-xs text-muted-foreground">Total Recharge</p>
-            </div>
-            <p className="text-[10px] sm:text-sm font-bold break-all">{formatCurrency(stats.totalRecharge)}</p>
-          </CardContent>
-        </Card>
-        <Card className="min-w-0 overflow-hidden">
-          <CardContent className="p-3 sm:p-4">
-            <div className="flex items-center gap-1.5 mb-1">
-              <ArrowDownRight className="w-4 h-4 shrink-0 text-destructive" />
-              <p className="text-[10px] sm:text-xs text-muted-foreground">Total Withdraw</p>
-            </div>
-            <p className="text-[10px] sm:text-sm font-bold break-all">{formatCurrency(stats.totalWithdraw)}</p>
-          </CardContent>
-        </Card>
+      {/* Overview Cards - 2 sections */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <StatCard icon={Users} label="Total Member" value={stats.totalUsers} color="text-primary" />
+        <StatCard icon={UserPlus} label="Daftar Saja" value={stats.membersOnly} color="text-muted-foreground" />
+        <StatCard icon={DollarSign} label="Member Deposit" value={stats.membersDeposit} color="text-success" />
+        <StatCard icon={Clock} label="Pending TX" value={stats.pendingCount} color="text-accent" />
       </div>
 
-      {/* Transactions Tabs */}
-      <Tabs defaultValue="pending" className="space-y-4">
-        <TabsList className="w-full grid grid-cols-2">
-          <TabsTrigger value="pending" className="gap-1.5">
-            <Clock className="w-4 h-4" />
-            Pending ({pendingTransactions.length})
-          </TabsTrigger>
-          <TabsTrigger value="history" className="gap-1.5">
-            <List className="w-4 h-4" />
-            Semua Transaksi
-          </TabsTrigger>
-        </TabsList>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+        <StatCard icon={Wallet} label="Total Balance" value={formatCurrency(stats.totalBalance)} color="text-foreground" />
+        <StatCard icon={TrendingUp} label="Total Income" value={formatCurrency(stats.totalIncome)} color="text-primary" />
+        <StatCard icon={ArrowUpRight} label="Total Recharge" value={formatCurrency(stats.totalRecharge)} color="text-success" />
+        <StatCard icon={ArrowDownRight} label="Total Withdraw" value={formatCurrency(stats.totalWithdraw)} color="text-destructive" />
+      </div>
 
-        {/* Pending Tab */}
-        <TabsContent value="pending">
-          {pendingTransactions.length === 0 ? (
-            <Card className="shadow-card">
-              <CardContent className="p-8 text-center">
-                <CheckCircle className="w-12 h-12 text-success mx-auto mb-3 opacity-50" />
-                <p className="text-muted-foreground">Tidak ada transaksi pending</p>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="space-y-3">
-              {pendingTransactions.map((tx) => (
-                <Card key={tx.id} className="shadow-card">
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.type === "recharge" ? "bg-success/20" : "bg-accent/20"}`}>
-                          {tx.type === "recharge" ? <ArrowUpRight className="w-5 h-5 text-success" /> : <ArrowDownRight className="w-5 h-5 text-accent" />}
-                        </div>
-                        <div>
-                          <p className="font-semibold text-foreground">{tx.userName}</p>
-                          <p className="text-xs text-muted-foreground">{tx.userPhone || tx.userEmail}</p>
-                        </div>
-                      </div>
-                      <Badge variant="outline" className="text-accent">Pending</Badge>
-                    </div>
-                    <div className="bg-muted rounded-lg p-3 mb-3">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground capitalize">{tx.type}</span>
-                        <span className={`text-lg font-bold ${tx.type === "recharge" ? "text-success" : "text-accent"}`}>
-                          {tx.type === "recharge" ? "+" : "-"}{formatCurrency(tx.amount)}
-                        </span>
-                      </div>
-                      {tx.description && <p className="text-xs text-muted-foreground mt-1">{tx.description}</p>}
-                      <p className="text-xs text-muted-foreground mt-1">{new Date(tx.created_at).toLocaleString("id-ID")}</p>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button variant="default" size="sm" className="flex-1 bg-success hover:bg-success/90" onClick={() => handleApprove(tx)} disabled={isLoading === tx.id}>
-                        <CheckCircle className="w-4 h-4 mr-1" />Approve
-                      </Button>
-                      <Button variant="destructive" size="sm" className="flex-1" onClick={() => handleReject(tx)} disabled={isLoading === tx.id}>
-                        <XCircle className="w-4 h-4 mr-1" />Reject
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+      {/* Transactions */}
+      <Card>
+        <Tabs defaultValue="pending">
+          <CardHeader className="p-4 pb-0">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Transaksi</CardTitle>
+              <TabsList className="h-8">
+                <TabsTrigger value="pending" className="text-[10px] h-7 px-3">
+                  Pending {pendingTransactions.length > 0 && <Badge className="ml-1.5 h-4 w-4 p-0 flex items-center justify-center text-[9px] bg-accent text-accent-foreground border-0">{pendingTransactions.length}</Badge>}
+                </TabsTrigger>
+                <TabsTrigger value="history" className="text-[10px] h-7 px-3">Semua</TabsTrigger>
+              </TabsList>
             </div>
-          )}
-        </TabsContent>
-
-        {/* All Transactions Tab */}
-        <TabsContent value="history">
-          <div className="flex gap-2 mb-4 flex-wrap">
-            {["all", "withdraw", "recharge", "income", "invest"].map((filter) => (
-              <Button
-                key={filter}
-                variant={txFilter === filter ? "default" : "outline"}
-                size="sm"
-                onClick={() => setTxFilter(filter)}
-                className="capitalize"
-              >
-                {filter === "all" ? "Semua" : filter}
-              </Button>
-            ))}
-          </div>
-
-          {filteredTransactions.length === 0 ? (
-            <Card>
-              <CardContent className="p-8 text-center">
-                <p className="text-muted-foreground">Tidak ada transaksi</p>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="space-y-2">
-              {filteredTransactions.map((tx) => (
-                <Card key={tx.id} className="shadow-card">
-                  <CardContent className="p-3 sm:p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3 min-w-0 flex-1">
-                        <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${
-                          tx.type === "recharge" || tx.type === "income" ? "bg-success/20" : 
-                          tx.type === "withdraw" ? "bg-destructive/20" : "bg-primary/20"
-                        }`}>
-                          {tx.type === "recharge" || tx.type === "income" ? (
-                            <ArrowUpRight className="w-4 h-4 text-success" />
-                          ) : tx.type === "withdraw" ? (
-                            <ArrowDownRight className="w-4 h-4 text-destructive" />
-                          ) : (
-                            <TrendingUp className="w-4 h-4 text-primary" />
-                          )}
-                        </div>
-                        <div className="min-w-0">
-                          <p className="font-medium text-sm text-foreground truncate">{tx.userName}</p>
-                          <p className="text-[10px] text-muted-foreground">{tx.userPhone || tx.userEmail}</p>
-                          <p className="text-[10px] text-muted-foreground capitalize">{tx.type} • {new Date(tx.created_at).toLocaleDateString("id-ID")}</p>
-                        </div>
-                      </div>
-                      <div className="text-right shrink-0 ml-2">
-                        <p className={`font-bold text-sm ${
-                          tx.type === "recharge" || tx.type === "income" ? "text-success" : 
-                          tx.type === "withdraw" ? "text-destructive" : "text-foreground"
-                        }`}>
-                          {tx.type === "recharge" || tx.type === "income" ? "+" : "-"}{formatCurrency(tx.amount)}
-                        </p>
-                        <div className="mt-1">{getStatusBadge(tx.status)}</div>
-                      </div>
-                    </div>
-                    {tx.description && (
-                      <p className="text-[10px] text-muted-foreground mt-2 pl-12 truncate">{tx.description}</p>
-                    )}
-                    {/* Show approve/reject for pending transactions */}
-                    {tx.status === "pending" && (
-                      <div className="flex gap-2 mt-3 pl-12">
-                        <Button variant="default" size="sm" className="flex-1 bg-success hover:bg-success/90 h-8 text-xs" onClick={() => handleApprove(tx)} disabled={isLoading === tx.id}>
-                          <CheckCircle className="w-3 h-3 mr-1" />Approve
-                        </Button>
-                        <Button variant="destructive" size="sm" className="flex-1 h-8 text-xs" onClick={() => handleReject(tx)} disabled={isLoading === tx.id}>
-                          <XCircle className="w-3 h-3 mr-1" />Reject
-                        </Button>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-        </TabsContent>
-      </Tabs>
+          </CardHeader>
+          <CardContent className="p-4">
+            <TabsContent value="pending" className="mt-0">
+              <TransactionTable data={pendingTransactions} showActions />
+            </TabsContent>
+            <TabsContent value="history" className="mt-0 space-y-3">
+              <div className="flex gap-1.5 flex-wrap">
+                {["all", "withdraw", "recharge", "income", "invest"].map((filter) => (
+                  <Button
+                    key={filter}
+                    variant={txFilter === filter ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setTxFilter(filter)}
+                    className="h-7 text-[10px] px-3 capitalize"
+                  >
+                    {filter === "all" ? "Semua" : filter}
+                  </Button>
+                ))}
+              </div>
+              <TransactionTable data={filteredTransactions} showActions />
+            </TabsContent>
+          </CardContent>
+        </Tabs>
+      </Card>
 
       {/* Coupon Dialog */}
       <Dialog open={couponDialogOpen} onOpenChange={setCouponDialogOpen}>
@@ -463,7 +379,6 @@ const Admin = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Backup Dialog */}
       <BackupDialog open={backupDialogOpen} onOpenChange={setBackupDialogOpen} />
     </div>
   );

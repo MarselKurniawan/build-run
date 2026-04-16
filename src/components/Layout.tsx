@@ -3,7 +3,7 @@ import { NavLink } from "@/components/NavLink";
 import { Home, Package, Users, UserCircle, LayoutGrid } from "lucide-react";
 import QuickMenuSheet from "@/components/QuickMenuSheet";
 
-const Layout = ({ children }: { children: React.ReactNode }) => {
+const Layout = ({ children, wide = false }: { children: React.ReactNode; wide?: boolean }) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -15,7 +15,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <div className="absolute top-1/2 left-0 w-64 h-64 bg-vip-gold/5 rounded-full blur-3xl" />
       </div>
 
-      <div className="mx-auto max-w-md relative z-10">
+      <div className={`mx-auto ${wide ? "max-w-4xl" : "max-w-md"} relative z-10`}>
         {children}
       </div>
       
