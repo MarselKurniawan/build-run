@@ -343,6 +343,27 @@ export type Database = {
         }
         Relationships: []
       }
+      vip_settings: {
+        Row: {
+          id: string
+          required_members: number
+          updated_at: string | null
+          vip_level: number
+        }
+        Insert: {
+          id?: string
+          required_members?: number
+          updated_at?: string | null
+          vip_level: number
+        }
+        Update: {
+          id?: string
+          required_members?: number
+          updated_at?: string | null
+          vip_level?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
