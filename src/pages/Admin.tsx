@@ -299,7 +299,7 @@ const Admin = () => {
         <StatCard icon={Clock} label="Pending TX" value={stats.pendingCount} color="text-accent" />
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
         <StatCard icon={Wallet} label="Total Balance" value={formatCurrency(stats.totalBalance)} color="text-foreground" />
         <StatCard icon={TrendingUp} label="Total Income" value={formatCurrency(stats.totalIncome)} color="text-primary" />
         <StatCard icon={ArrowUpRight} label="Total Recharge" value={formatCurrency(stats.totalRecharge)} color="text-success" />
