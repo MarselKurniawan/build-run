@@ -290,32 +290,18 @@ const Admin = () => {
       </div>
 
       {/* Overview Cards - 2 sections */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Members Overview */}
-        <Card>
-          <CardHeader className="p-4 pb-3">
-            <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Member Overview</CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 pt-0 grid grid-cols-2 gap-2">
-            <StatCard icon={Users} label="Total Member" value={stats.totalUsers} color="text-primary" />
-            <StatCard icon={UserPlus} label="Daftar Saja" value={stats.membersOnly} color="text-muted-foreground" />
-            <StatCard icon={DollarSign} label="Member Deposit" value={stats.membersDeposit} color="text-success" />
-            <StatCard icon={Clock} label="Pending TX" value={stats.pendingCount} color="text-accent" />
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <StatCard icon={Users} label="Total Member" value={stats.totalUsers} color="text-primary" />
+        <StatCard icon={UserPlus} label="Daftar Saja" value={stats.membersOnly} color="text-muted-foreground" />
+        <StatCard icon={DollarSign} label="Member Deposit" value={stats.membersDeposit} color="text-success" />
+        <StatCard icon={Clock} label="Pending TX" value={stats.pendingCount} color="text-accent" />
+      </div>
 
-        {/* Financial Overview */}
-        <Card>
-          <CardHeader className="p-4 pb-3">
-            <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ringkasan Keuangan</CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 pt-0 grid grid-cols-2 gap-2">
-            <StatCard icon={Wallet} label="Total Balance" value={formatCurrency(stats.totalBalance)} color="text-foreground" />
-            <StatCard icon={TrendingUp} label="Total Income" value={formatCurrency(stats.totalIncome)} color="text-primary" />
-            <StatCard icon={ArrowUpRight} label="Total Recharge" value={formatCurrency(stats.totalRecharge)} color="text-success" />
-            <StatCard icon={ArrowDownRight} label="Total Withdraw" value={formatCurrency(stats.totalWithdraw)} color="text-destructive" />
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <StatCard icon={Wallet} label="Total Balance" value={formatCurrency(stats.totalBalance)} color="text-foreground" />
+        <StatCard icon={TrendingUp} label="Total Income" value={formatCurrency(stats.totalIncome)} color="text-primary" />
+        <StatCard icon={ArrowUpRight} label="Total Recharge" value={formatCurrency(stats.totalRecharge)} color="text-success" />
+        <StatCard icon={ArrowDownRight} label="Total Withdraw" value={formatCurrency(stats.totalWithdraw)} color="text-destructive" />
       </div>
 
       {/* Transactions */}
