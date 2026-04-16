@@ -83,16 +83,21 @@ const Admin = () => {
   };
 
   const loadData = async () => {
-    const [profilesData, txData, allTxData, couponData] = await Promise.all([
+    const [profilesData, txData, allTxData, couponData, vipData] = await Promise.all([
       getAllProfiles(),
       getPendingTransactions(),
       getAllTransactions(),
       getCoupons(),
+      getVipSettings(),
     ]);
     setProfiles(profilesData);
     setPendingTransactions(enrichTransactions(txData, profilesData));
     setAllTransactions(enrichTransactions(allTxData, profilesData));
     setCoupons(couponData);
+    setVipSettings(vipData);
+    const vipMap: Record<number, number> = {};
+    vipData.forEach(v => { vipMap[v.vip_level] = v.required_members; });
+    setEditingVip(vipMap);
   };
 
   useEffect(() => {
