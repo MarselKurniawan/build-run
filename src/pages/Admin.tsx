@@ -412,6 +412,37 @@ const Admin = () => {
         </DialogContent>
       </Dialog>
 
+
+      {/* VIP Settings Dialog */}
+      <Dialog open={vipDialogOpen} onOpenChange={setVipDialogOpen}>
+        <DialogContent className="w-[95vw] max-w-md mx-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2"><Crown className="w-5 h-5 text-secondary" />Setting VIP Level</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <p className="text-xs text-muted-foreground">Atur jumlah member (A+B+C) yang dibutuhkan untuk naik level VIP.</p>
+            {[1, 2, 3, 4, 5].map((level) => (
+              <div key={level} className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
+                <Badge className="bg-secondary/20 text-secondary border-0 font-bold shrink-0">VIP {level}</Badge>
+                <div className="flex-1">
+                  <Label className="text-[10px] text-muted-foreground">Minimal Member</Label>
+                  <Input
+                    type="number"
+                    min={0}
+                    value={editingVip[level] ?? 0}
+                    onChange={(e) => setEditingVip(prev => ({ ...prev, [level]: parseInt(e.target.value) || 0 }))}
+                    className="h-8 text-sm"
+                  />
+                </div>
+              </div>
+            ))}
+            <Button onClick={handleSaveVipSettings} className="w-full" disabled={isLoading === 'vip'}>
+              {isLoading === 'vip' ? 'Menyimpan...' : 'Simpan Setting'}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <BackupDialog open={backupDialogOpen} onOpenChange={setBackupDialogOpen} />
     </div>
   );
