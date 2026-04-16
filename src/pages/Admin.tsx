@@ -3,11 +3,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import {
   getAllProfiles,
   getPendingTransactions,
+  getAllTransactions,
   updateTransactionStatus,
   updateProfile,
   getCoupons,
@@ -33,6 +35,10 @@ import {
   Ticket,
   Copy,
   Database,
+  UserPlus,
+  DollarSign,
+  Clock,
+  List,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import BackupDialog from "@/components/BackupDialog";
@@ -40,6 +46,7 @@ import BackupDialog from "@/components/BackupDialog";
 interface PendingTx extends Transaction {
   userName?: string;
   userEmail?: string;
+  userPhone?: string;
 }
 
 const Admin = () => {
@@ -47,29 +54,35 @@ const Admin = () => {
   const { user } = useAuth();
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [pendingTransactions, setPendingTransactions] = useState<PendingTx[]>([]);
+  const [allTransactions, setAllTransactions] = useState<PendingTx[]>([]);
   const [isLoading, setIsLoading] = useState<string | null>(null);
   const [couponDialogOpen, setCouponDialogOpen] = useState(false);
   const [backupDialogOpen, setBackupDialogOpen] = useState(false);
   const [coupons, setCoupons] = useState<Coupon[]>([]);
+  const [txFilter, setTxFilter] = useState<string>("all");
 
-  const loadData = async () => {
-    const [profilesData, txData, couponData] = await Promise.all([
-      getAllProfiles(),
-      getPendingTransactions(),
-      getCoupons(),
-    ]);
-    setProfiles(profilesData);
-    
-    // Enrich transactions with user info
-    const enrichedTx = txData.map(tx => {
+  const enrichTransactions = (txData: Transaction[], profilesData: Profile[]): PendingTx[] => {
+    return txData.map(tx => {
       const profile = profilesData.find(p => p.user_id === tx.user_id);
       return {
         ...tx,
         userName: profile?.name || 'Unknown',
         userEmail: profile?.email || '',
+        userPhone: profile?.phone || '',
       };
     });
-    setPendingTransactions(enrichedTx);
+  };
+
+  const loadData = async () => {
+    const [profilesData, txData, allTxData, couponData] = await Promise.all([
+      getAllProfiles(),
+      getPendingTransactions(),
+      getAllTransactions(),
+      getCoupons(),
+    ]);
+    setProfiles(profilesData);
+    setPendingTransactions(enrichTransactions(txData, profilesData));
+    setAllTransactions(enrichTransactions(allTxData, profilesData));
     setCoupons(couponData);
   };
 
@@ -78,7 +91,6 @@ const Admin = () => {
   }, []);
 
   const generateCoupon = async () => {
-    // Generate 5 character alphanumeric code
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let code = '';
     for (let i = 0; i < 5; i++) {
@@ -104,11 +116,7 @@ const Admin = () => {
 
   const handleApprove = async (tx: PendingTx) => {
     setIsLoading(tx.id);
-    
-    // Update transaction status
     await updateTransactionStatus(tx.id, "success");
-    
-    // For withdrawals, also update total_withdraw
     if (tx.type === 'withdraw') {
       const profile = profiles.find(p => p.user_id === tx.user_id);
       if (profile) {
@@ -117,7 +125,6 @@ const Admin = () => {
         });
       }
     }
-    
     toast({ title: "Transaksi Disetujui", description: "Status berhasil diupdate" });
     setIsLoading(null);
     loadData();
@@ -125,11 +132,7 @@ const Admin = () => {
 
   const handleReject = async (tx: PendingTx) => {
     setIsLoading(tx.id);
-    
-    // Update transaction status
     await updateTransactionStatus(tx.id, "rejected");
-    
-    // For withdrawals, refund the balance
     if (tx.type === 'withdraw') {
       const profile = profiles.find(p => p.user_id === tx.user_id);
       if (profile) {
@@ -138,11 +141,18 @@ const Admin = () => {
         });
       }
     }
-    
     toast({ title: "Transaksi Ditolak", description: "Balance dikembalikan", variant: "destructive" });
     setIsLoading(null);
     loadData();
   };
+
+  const membersWithDeposit = profiles.filter(p => p.total_recharge > 0);
+  const membersRegisteredOnly = profiles.filter(p => p.total_recharge === 0);
+
+  const filteredTransactions = allTransactions.filter(tx => {
+    if (txFilter === "all") return true;
+    return tx.type === txFilter;
+  });
 
   const stats = {
     totalUsers: profiles.length,
@@ -151,6 +161,17 @@ const Admin = () => {
     totalRecharge: profiles.reduce((sum, u) => sum + u.total_recharge, 0),
     totalWithdraw: profiles.reduce((sum, u) => sum + u.total_withdraw, 0),
     totalIncome: profiles.reduce((sum, u) => sum + u.total_income, 0),
+    membersDeposit: membersWithDeposit.length,
+    membersOnly: membersRegisteredOnly.length,
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "success": return <Badge className="bg-success/20 text-success border-success/30">Sukses</Badge>;
+      case "pending": return <Badge variant="outline" className="text-accent border-accent/30">Pending</Badge>;
+      case "rejected": return <Badge variant="destructive">Ditolak</Badge>;
+      default: return <Badge variant="outline">{status}</Badge>;
+    }
   };
 
   return (
@@ -189,14 +210,41 @@ const Admin = () => {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
         <Card className="min-w-0 overflow-hidden">
           <CardContent className="p-3 sm:p-4">
             <div className="flex items-center gap-1.5 mb-1">
               <Users className="w-4 h-4 shrink-0 text-primary" />
-              <p className="text-[10px] sm:text-xs text-muted-foreground">Total Users</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground">Total Member</p>
             </div>
             <p className="text-lg sm:text-2xl font-bold">{stats.totalUsers}</p>
+          </CardContent>
+        </Card>
+        <Card className="min-w-0 overflow-hidden">
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex items-center gap-1.5 mb-1">
+              <UserPlus className="w-4 h-4 shrink-0 text-muted-foreground" />
+              <p className="text-[10px] sm:text-xs text-muted-foreground">Daftar Saja</p>
+            </div>
+            <p className="text-lg sm:text-2xl font-bold">{stats.membersOnly}</p>
+          </CardContent>
+        </Card>
+        <Card className="min-w-0 overflow-hidden">
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex items-center gap-1.5 mb-1">
+              <DollarSign className="w-4 h-4 shrink-0 text-success" />
+              <p className="text-[10px] sm:text-xs text-muted-foreground">Member Deposit</p>
+            </div>
+            <p className="text-lg sm:text-2xl font-bold text-success">{stats.membersDeposit}</p>
+          </CardContent>
+        </Card>
+        <Card className="min-w-0 overflow-hidden bg-accent/10">
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex items-center gap-1.5 mb-1">
+              <Clock className="w-4 h-4 shrink-0 text-accent" />
+              <p className="text-[10px] sm:text-xs text-muted-foreground">Pending</p>
+            </div>
+            <p className="text-lg sm:text-2xl font-bold text-accent">{stats.pendingCount}</p>
           </CardContent>
         </Card>
         <Card className="min-w-0 overflow-hidden">
@@ -206,15 +254,6 @@ const Admin = () => {
               <p className="text-[10px] sm:text-xs text-muted-foreground">Total Balance</p>
             </div>
             <p className="text-[10px] sm:text-lg font-bold break-all">{formatCurrency(stats.totalBalance)}</p>
-          </CardContent>
-        </Card>
-        <Card className="min-w-0 overflow-hidden bg-accent/10">
-          <CardContent className="p-3 sm:p-4">
-            <div className="flex items-center gap-1.5 mb-1">
-              <ArrowUpRight className="w-4 h-4 shrink-0 text-accent" />
-              <p className="text-[10px] sm:text-xs text-muted-foreground">Pending</p>
-            </div>
-            <p className="text-lg sm:text-2xl font-bold text-accent">{stats.pendingCount}</p>
           </CardContent>
         </Card>
         <Card className="min-w-0 overflow-hidden">
@@ -246,57 +285,148 @@ const Admin = () => {
         </Card>
       </div>
 
-      {/* Pending Transactions */}
-      <div>
-        <h2 className="text-lg font-bold mb-3">Transaksi Pending ({pendingTransactions.length})</h2>
-        {pendingTransactions.length === 0 ? (
-          <Card className="shadow-card">
-            <CardContent className="p-8 text-center">
-              <CheckCircle className="w-12 h-12 text-success mx-auto mb-3 opacity-50" />
-              <p className="text-muted-foreground">Tidak ada transaksi pending</p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="space-y-3">
-            {pendingTransactions.map((tx) => (
-              <Card key={tx.id} className="shadow-card">
-                <CardContent className="p-4">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.type === "recharge" ? "bg-success/20" : "bg-accent/20"}`}>
-                        {tx.type === "recharge" ? <ArrowUpRight className="w-5 h-5 text-success" /> : <ArrowDownRight className="w-5 h-5 text-accent" />}
+      {/* Transactions Tabs */}
+      <Tabs defaultValue="pending" className="space-y-4">
+        <TabsList className="w-full grid grid-cols-2">
+          <TabsTrigger value="pending" className="gap-1.5">
+            <Clock className="w-4 h-4" />
+            Pending ({pendingTransactions.length})
+          </TabsTrigger>
+          <TabsTrigger value="history" className="gap-1.5">
+            <List className="w-4 h-4" />
+            Semua Transaksi
+          </TabsTrigger>
+        </TabsList>
+
+        {/* Pending Tab */}
+        <TabsContent value="pending">
+          {pendingTransactions.length === 0 ? (
+            <Card className="shadow-card">
+              <CardContent className="p-8 text-center">
+                <CheckCircle className="w-12 h-12 text-success mx-auto mb-3 opacity-50" />
+                <p className="text-muted-foreground">Tidak ada transaksi pending</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-3">
+              {pendingTransactions.map((tx) => (
+                <Card key={tx.id} className="shadow-card">
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.type === "recharge" ? "bg-success/20" : "bg-accent/20"}`}>
+                          {tx.type === "recharge" ? <ArrowUpRight className="w-5 h-5 text-success" /> : <ArrowDownRight className="w-5 h-5 text-accent" />}
+                        </div>
+                        <div>
+                          <p className="font-semibold text-foreground">{tx.userName}</p>
+                          <p className="text-xs text-muted-foreground">{tx.userPhone || tx.userEmail}</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-semibold text-foreground">{tx.userName}</p>
-                        <p className="text-xs text-muted-foreground">{tx.userEmail}</p>
+                      <Badge variant="outline" className="text-accent">Pending</Badge>
+                    </div>
+                    <div className="bg-muted rounded-lg p-3 mb-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-muted-foreground capitalize">{tx.type}</span>
+                        <span className={`text-lg font-bold ${tx.type === "recharge" ? "text-success" : "text-accent"}`}>
+                          {tx.type === "recharge" ? "+" : "-"}{formatCurrency(tx.amount)}
+                        </span>
                       </div>
+                      {tx.description && <p className="text-xs text-muted-foreground mt-1">{tx.description}</p>}
+                      <p className="text-xs text-muted-foreground mt-1">{new Date(tx.created_at).toLocaleString("id-ID")}</p>
                     </div>
-                    <Badge variant="outline" className="text-accent">Pending</Badge>
-                  </div>
-                  <div className="bg-muted rounded-lg p-3 mb-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground capitalize">{tx.type}</span>
-                      <span className={`text-lg font-bold ${tx.type === "recharge" ? "text-success" : "text-accent"}`}>
-                        {tx.type === "recharge" ? "+" : "-"}{formatCurrency(tx.amount)}
-                      </span>
+                    <div className="flex gap-2">
+                      <Button variant="default" size="sm" className="flex-1 bg-success hover:bg-success/90" onClick={() => handleApprove(tx)} disabled={isLoading === tx.id}>
+                        <CheckCircle className="w-4 h-4 mr-1" />Approve
+                      </Button>
+                      <Button variant="destructive" size="sm" className="flex-1" onClick={() => handleReject(tx)} disabled={isLoading === tx.id}>
+                        <XCircle className="w-4 h-4 mr-1" />Reject
+                      </Button>
                     </div>
-                    {tx.description && <p className="text-xs text-muted-foreground mt-1">{tx.description}</p>}
-                    <p className="text-xs text-muted-foreground mt-1">{new Date(tx.created_at).toLocaleString("id-ID")}</p>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button variant="default" size="sm" className="flex-1 bg-success hover:bg-success/90" onClick={() => handleApprove(tx)} disabled={isLoading === tx.id}>
-                      <CheckCircle className="w-4 h-4 mr-1" />Approve
-                    </Button>
-                    <Button variant="destructive" size="sm" className="flex-1" onClick={() => handleReject(tx)} disabled={isLoading === tx.id}>
-                      <XCircle className="w-4 h-4 mr-1" />Reject
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+
+        {/* All Transactions Tab */}
+        <TabsContent value="history">
+          <div className="flex gap-2 mb-4 flex-wrap">
+            {["all", "withdraw", "recharge", "income", "invest"].map((filter) => (
+              <Button
+                key={filter}
+                variant={txFilter === filter ? "default" : "outline"}
+                size="sm"
+                onClick={() => setTxFilter(filter)}
+                className="capitalize"
+              >
+                {filter === "all" ? "Semua" : filter}
+              </Button>
             ))}
           </div>
-        )}
-      </div>
+
+          {filteredTransactions.length === 0 ? (
+            <Card>
+              <CardContent className="p-8 text-center">
+                <p className="text-muted-foreground">Tidak ada transaksi</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-2">
+              {filteredTransactions.map((tx) => (
+                <Card key={tx.id} className="shadow-card">
+                  <CardContent className="p-3 sm:p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${
+                          tx.type === "recharge" || tx.type === "income" ? "bg-success/20" : 
+                          tx.type === "withdraw" ? "bg-destructive/20" : "bg-primary/20"
+                        }`}>
+                          {tx.type === "recharge" || tx.type === "income" ? (
+                            <ArrowUpRight className="w-4 h-4 text-success" />
+                          ) : tx.type === "withdraw" ? (
+                            <ArrowDownRight className="w-4 h-4 text-destructive" />
+                          ) : (
+                            <TrendingUp className="w-4 h-4 text-primary" />
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-medium text-sm text-foreground truncate">{tx.userName}</p>
+                          <p className="text-[10px] text-muted-foreground">{tx.userPhone || tx.userEmail}</p>
+                          <p className="text-[10px] text-muted-foreground capitalize">{tx.type} • {new Date(tx.created_at).toLocaleDateString("id-ID")}</p>
+                        </div>
+                      </div>
+                      <div className="text-right shrink-0 ml-2">
+                        <p className={`font-bold text-sm ${
+                          tx.type === "recharge" || tx.type === "income" ? "text-success" : 
+                          tx.type === "withdraw" ? "text-destructive" : "text-foreground"
+                        }`}>
+                          {tx.type === "recharge" || tx.type === "income" ? "+" : "-"}{formatCurrency(tx.amount)}
+                        </p>
+                        <div className="mt-1">{getStatusBadge(tx.status)}</div>
+                      </div>
+                    </div>
+                    {tx.description && (
+                      <p className="text-[10px] text-muted-foreground mt-2 pl-12 truncate">{tx.description}</p>
+                    )}
+                    {/* Show approve/reject for pending transactions */}
+                    {tx.status === "pending" && (
+                      <div className="flex gap-2 mt-3 pl-12">
+                        <Button variant="default" size="sm" className="flex-1 bg-success hover:bg-success/90 h-8 text-xs" onClick={() => handleApprove(tx)} disabled={isLoading === tx.id}>
+                          <CheckCircle className="w-3 h-3 mr-1" />Approve
+                        </Button>
+                        <Button variant="destructive" size="sm" className="flex-1 h-8 text-xs" onClick={() => handleReject(tx)} disabled={isLoading === tx.id}>
+                          <XCircle className="w-3 h-3 mr-1" />Reject
+                        </Button>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
 
       {/* Coupon Dialog */}
       <Dialog open={couponDialogOpen} onOpenChange={setCouponDialogOpen}>
