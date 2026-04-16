@@ -185,13 +185,15 @@ const Admin = () => {
   };
 
   const StatCard = ({ icon: Icon, label, value, color = "text-foreground" }: { icon: any; label: string; value: string | number; color?: string }) => (
-    <div className="p-2.5 rounded-lg bg-muted/50 min-w-0">
-      <p className="text-[10px] text-muted-foreground mb-0.5">{label}</p>
-      <div className="flex items-center gap-1.5">
-        <Icon className={`w-3.5 h-3.5 shrink-0 ${color}`} />
-        <p className={`text-xs font-bold ${color} break-all`}>{value}</p>
-      </div>
-    </div>
+    <Card className="overflow-hidden">
+      <CardContent className="p-3">
+        <p className="text-[10px] text-muted-foreground mb-1">{label}</p>
+        <div className="flex items-center gap-1.5">
+          <Icon className={`w-3.5 h-3.5 shrink-0 ${color}`} />
+          <p className={`text-sm font-bold ${color} whitespace-nowrap`}>{value}</p>
+        </div>
+      </CardContent>
+    </Card>
   );
 
   const TransactionTable = ({ data, showActions }: { data: PendingTx[]; showActions?: boolean }) => (
