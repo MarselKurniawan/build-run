@@ -84,7 +84,7 @@ const App = () => (
               path="/admin"
               element={
                 <ProtectedRoute adminOnly>
-                  <Layout><Admin /></Layout>
+                  <Layout wide><Admin /></Layout>
                 </ProtectedRoute>
               }
             />
@@ -92,7 +92,7 @@ const App = () => (
               path="/admin/users"
               element={
                 <ProtectedRoute adminOnly>
-                  <Layout><AdminUsers /></Layout>
+                  <Layout wide><AdminUsers /></Layout>
                 </ProtectedRoute>
               }
             />
@@ -100,7 +100,7 @@ const App = () => (
               path="/admin/products"
               element={
                 <ProtectedRoute adminOnly>
-                  <Layout><AdminProducts /></Layout>
+                  <Layout wide><AdminProducts /></Layout>
                 </ProtectedRoute>
               }
             />
