@@ -19,9 +19,12 @@ import {
   createCoupon,
   deleteCoupon,
   formatCurrency,
+  getVipSettings,
+  updateVipSetting,
   Profile,
   Transaction,
   Coupon,
+  VipSetting,
 } from "@/lib/database";
 import {
   Users,
