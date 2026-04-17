@@ -178,19 +178,21 @@ const Auth = () => {
 
     setIsLoading(true);
     try {
-      // Verify OTP
-      const { data, error: verifyError } = await supabase.functions.invoke("verify-otp", {
-        body: { phone: registerPhone, code: otpCode },
-      });
-
-      if (verifyError || !data?.success) {
-        toast({
-          title: "Verifikasi Gagal",
-          description: data?.error || "Kode OTP salah atau kadaluarsa",
-          variant: "destructive",
+      // Verify OTP (skipped in dev mode)
+      if (!DEV_SKIP_OTP) {
+        const { data, error: verifyError } = await supabase.functions.invoke("verify-otp", {
+          body: { phone: registerPhone, code: otpCode },
         });
-        setIsLoading(false);
-        return;
+
+        if (verifyError || !data?.success) {
+          toast({
+            title: "Verifikasi Gagal",
+            description: data?.error || "Kode OTP salah atau kadaluarsa",
+            variant: "destructive",
+          });
+          setIsLoading(false);
+          return;
+        }
       }
 
       // OTP verified, proceed with registration
