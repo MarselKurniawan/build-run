@@ -18,16 +18,24 @@ import {
   Settings,
   Share2,
   Headphones,
-  Package,
   Wallet,
   Ticket,
   Building2,
-  Eye,
-  EyeOff,
   ArrowUpRight,
   ArrowDownRight,
   Crown,
   Copy,
+  Menu,
+  ClipboardList,
+  Trophy,
+  Volume2,
+  Gift,
+  CalendarCheck,
+  FileText,
+  ScrollText,
+  Award,
+  Info,
+  Download,
 } from "lucide-react";
 import ProfileDialog from "@/components/ProfileDialog";
 import CouponDialog from "@/components/CouponDialog";
@@ -35,12 +43,14 @@ import BankAccountDialog from "@/components/BankAccountDialog";
 import CompanyProfileDialog from "@/components/CompanyProfileDialog";
 import RechargeDialog from "@/components/RechargeDialog";
 import WithdrawDialog from "@/components/WithdrawDialog";
+import ReferralDialog from "@/components/ReferralDialog";
+import DailyCheckinDialog from "@/components/DailyCheckinDialog";
 
 const Profile = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { profile, isAdmin, signOut, refreshProfile } = useAuth();
-  
+
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<"profile" | "password">("profile");
   const [couponDialogOpen, setCouponDialogOpen] = useState(false);
@@ -48,7 +58,8 @@ const Profile = () => {
   const [companyDialogOpen, setCompanyDialogOpen] = useState(false);
   const [rechargeOpen, setRechargeOpen] = useState(false);
   const [withdrawOpen, setWithdrawOpen] = useState(false);
-  const [showBalance, setShowBalance] = useState(true);
+  const [referralOpen, setReferralOpen] = useState(false);
+  const [checkinOpen, setCheckinOpen] = useState(false);
 
   const openProfileDialog = (mode: "profile" | "password") => {
     setDialogMode(mode);
@@ -70,222 +81,244 @@ const Profile = () => {
 
   if (!profile) return null;
 
-  const quickMenuItems = [
-    {
-      icon: Package,
-      label: "Pesanan",
-      description: "Riwayat investasi saya",
-      href: "/account",
-      color: "text-orange-500",
-      bgColor: "bg-orange-50 dark:bg-orange-500/10",
-    },
-    {
-      icon: Wallet,
-      label: "Tagihan",
-      description: "Riwayat transaksi saya",
-      href: "/account",
-      color: "text-primary",
-      bgColor: "bg-primary/5",
-    },
-    {
-      icon: Crown,
-      label: "VIP",
-      description: `Level ${profile.vip_level}`,
-      href: "/team",
-      color: "text-vip-gold",
-      bgColor: "bg-vip-gold/5",
-    },
-    {
-      icon: Share2,
-      label: "Peralatan",
-      description: "Bentuk tim & undang",
-      href: "/team",
-      color: "text-destructive",
-      bgColor: "bg-destructive/5",
-    },
+  const quickGrid = [
+    { icon: Share2, label: "Undang pengguna", description: "Bagikan undangan Anda", action: () => setReferralOpen(true), color: "text-accent", bg: "bg-accent/10" },
+    { icon: Crown, label: "VIP", description: "Dapatkan hak eksklusif lebih banyak!", action: () => navigate("/team"), color: "text-vip-gold", bg: "bg-vip-gold/10" },
+    { icon: Landmark, label: "Manajemen", description: "Atur kartu bank Anda untuk menarik uang!", action: () => setBankDialogOpen(true), color: "text-primary", bg: "bg-primary/10" },
+    { icon: UserIcon, label: "Tim", description: "Bentuk tim dan lihat mereka disini!", action: () => navigate("/team"), color: "text-success", bg: "bg-success/10" },
   ];
 
-  const menuItems = [
-    ...(isAdmin ? [{
-      icon: Settings,
-      label: "Admin Dashboard",
-      description: "Kelola platform",
-      action: () => navigate("/admin"),
-      color: "text-destructive",
-    }] : []),
-    {
-      icon: Edit2,
-      label: "Update Profile",
-      description: "Ubah nama dan telepon",
-      action: () => openProfileDialog("profile"),
-      color: "text-primary",
-    },
-    {
-      icon: Lock,
-      label: "Ganti Password",
-      description: "Ubah password akun",
-      action: () => openProfileDialog("password"),
-      color: "text-accent",
-    },
-    {
-      icon: Landmark,
-      label: "Rekening Bank",
-      description: "Kelola rekening & e-wallet",
-      action: () => setBankDialogOpen(true),
-      color: "text-primary",
-    },
-    {
-      icon: Ticket,
-      label: "Klaim Kupon",
-      description: "Masukkan kode kupon",
-      action: () => setCouponDialogOpen(true),
-      color: "text-vip-gold",
-    },
-    {
-      icon: Building2,
-      label: "Profil Perusahaan",
-      description: "Informasi InvestPro",
-      action: () => setCompanyDialogOpen(true),
-      color: "text-primary",
-    },
-    {
-      icon: Headphones,
-      label: "Hubungi Kami",
-      description: "Customer service",
-      action: () => {
-        toast({
-          title: "Hubungi Kami",
-          description: "WhatsApp: +62 812-3456-7890",
-        });
-      },
-      color: "text-accent",
-    },
+  const menuPrimary = [
+    { icon: ClipboardList, label: "Catatan Penerbangan", action: () => navigate("/account") },
+    { icon: Trophy, label: "Tantangan", action: () => navigate("/account") },
+    { icon: Volume2, label: "Pemberitahuan Pesan", action: () => toast({ title: "Belum ada pesan", description: "Tidak ada pemberitahuan baru" }) },
+    { icon: Gift, label: "Keberuntungan", action: () => setCouponDialogOpen(true) },
+    { icon: CalendarCheck, label: "Check-in", action: () => setCheckinOpen(true) },
+  ];
+
+  const menuLegal = [
+    { icon: FileText, label: "Terms of Service", action: () => setCompanyDialogOpen(true) },
+    { icon: ScrollText, label: "Privacy Policy", action: () => setCompanyDialogOpen(true) },
+    { icon: Award, label: "Perjanjian anggota VIP", action: () => navigate("/team") },
+    { icon: Info, label: "Tentang kami", action: () => setCompanyDialogOpen(true) },
+    { icon: Headphones, label: "Pelayanan Pelanggan", action: () => toast({ title: "Hubungi Kami", description: "WhatsApp: +62 812-3456-7890" }) },
+  ];
+
+  const menuSettings = [
+    { icon: Settings, label: "Pengaturan", action: () => openProfileDialog("profile") },
+    { icon: Lock, label: "Ganti Password", action: () => openProfileDialog("password") },
+    { icon: Download, label: "Unduh aplikasi", action: () => toast({ title: "Segera tersedia", description: "Fitur sedang dipersiapkan" }) },
   ];
 
   return (
-    <div className="space-y-4 p-4 pt-6">
-      {/* User Profile Header */}
-      <div className="flex items-center gap-3">
-        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary/30 to-accent/30 flex items-center justify-center border-2 border-border">
-          <UserIcon className="w-8 h-8 text-foreground/70" />
+    <div className="space-y-3 p-4 pt-5">
+      {/* Profile header */}
+      <div className="flex items-center gap-3 pb-1">
+        <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary/30 to-accent/30 flex items-center justify-center border-2 border-primary/30 shrink-0">
+          <UserIcon className="w-7 h-7 text-foreground/80" />
         </div>
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <h2 className="text-base font-bold text-foreground truncate">{profile.name}</h2>
-            <Badge variant="vip" className="text-[10px] px-1.5 py-0.5 shrink-0">VIP{profile.vip_level}</Badge>
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <h2 className="text-sm font-bold text-foreground truncate">{profile.name}</h2>
+            <Badge className="text-[9px] px-1.5 py-0 h-4 bg-primary/15 text-primary border-primary/30 hover:bg-primary/15">
+              VIP {profile.vip_level} 👑
+            </Badge>
             {isAdmin && (
-              <Badge variant="outline" className="border-primary/50 text-primary text-[10px] px-1.5 py-0.5 shrink-0">
-                <Shield className="w-2.5 h-2.5 mr-0.5" />
-                Admin
+              <Badge variant="outline" className="border-destructive/40 text-destructive text-[9px] px-1 py-0 h-4">
+                <Shield className="w-2.5 h-2.5 mr-0.5" /> Admin
               </Badge>
             )}
           </div>
-          <div className="flex items-center gap-1.5 mt-0.5">
-            <p className="text-xs text-muted-foreground">UID {profile.user_id.slice(0, 8).toUpperCase()}</p>
-            <button onClick={handleCopyUID} className="text-muted-foreground hover:text-foreground">
-              <Copy className="w-3 h-3" />
-            </button>
-          </div>
-          <p className="text-[10px] text-muted-foreground">{profile.email}</p>
+          <button onClick={handleCopyUID} className="flex items-center gap-1 text-[10px] text-muted-foreground hover:text-foreground mt-0.5">
+            ID akun: {profile.user_id.slice(0, 6).toUpperCase()} <Copy className="w-2.5 h-2.5" />
+          </button>
+          <button onClick={() => openProfileDialog("profile")} className="text-[10px] text-primary flex items-center gap-0.5 mt-0.5">
+            Lihat atau edit profil <ChevronRight className="w-3 h-3" />
+          </button>
         </div>
+        <button className="w-9 h-9 rounded-full bg-card/80 border border-border/50 flex items-center justify-center shrink-0">
+          <Menu className="w-4 h-4 text-foreground/70" />
+        </button>
       </div>
 
-      {/* Balance Card */}
-      <Card className="bg-gradient-to-br from-primary/10 via-accent/5 to-vip-gold/10 border-primary/20 overflow-hidden">
-        <CardContent className="p-4">
-          <div className="flex items-center gap-2 mb-1">
-            <p className="text-xs text-muted-foreground">Saldo total</p>
-            <button onClick={() => setShowBalance(!showBalance)} className="text-muted-foreground hover:text-foreground">
-              {showBalance ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
-            </button>
-          </div>
-          <p className="text-2xl font-bold text-foreground mb-1">
-            {showBalance ? formatCurrency(profile.balance) : '••••••••'}
-          </p>
-          <div className="flex items-center gap-4 text-[11px] mb-4">
-            <span className="text-success">Keuntungan: {formatCurrency(profile.total_income)}</span>
-            <span className="text-muted-foreground">Total pendapatan: {formatCurrency(profile.total_income)}</span>
-          </div>
+      {/* Saldo grid 2x */}
+      <div className="grid grid-cols-2 gap-2.5">
+        <Card className="bg-card/80 border-border/60">
+          <CardContent className="p-3">
+            <div className="flex items-center justify-between mb-1.5">
+              <div className="flex items-center gap-1.5">
+                <Wallet className="w-3.5 h-3.5 text-primary" />
+                <span className="text-[10px] text-muted-foreground">Isi ulang saldo</span>
+              </div>
+              <button onClick={() => setRechargeOpen(true)} className="text-[9px] px-1.5 py-0.5 rounded-full bg-primary/15 text-primary font-medium">
+                Deposito ›
+              </button>
+            </div>
+            <p className="text-base font-bold text-foreground break-all">{formatCurrency(profile.total_recharge || 0)}</p>
+          </CardContent>
+        </Card>
 
-          <div className="grid grid-cols-2 gap-3">
-            <Button
-              className="h-10 text-sm font-semibold"
-              onClick={() => setRechargeOpen(true)}
-            >
-              <ArrowUpRight className="w-4 h-4 mr-1.5" />
-              Deposito
-            </Button>
-            <Button
-              variant="outline"
-              className="h-10 text-sm font-semibold"
-              onClick={() => setWithdrawOpen(true)}
-            >
-              <ArrowDownRight className="w-4 h-4 mr-1.5" />
-              Menarik
+        <Card className="bg-card/80 border-border/60">
+          <CardContent className="p-3">
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <Coins className="w-3.5 h-3.5 text-accent" />
+              <span className="text-[10px] text-muted-foreground">Saldo kuantitatif</span>
+            </div>
+            <p className="text-base font-bold text-foreground break-all">{formatCurrency(profile.balance || 0)}</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Saldo detail */}
+      <Card className="bg-gradient-to-br from-accent/10 via-primary/5 to-card/80 border-border/60">
+        <CardContent className="p-3.5">
+          <div className="space-y-1.5 text-[11px] mb-3">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Bertambah hari ini:</span>
+              <span className="font-semibold text-foreground break-all">{formatCurrency(profile.total_income || 0)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Saldo bisa ditarik:</span>
+              <span className="font-semibold text-foreground break-all">{formatCurrency(profile.balance || 0)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Akumulasi saldo:</span>
+              <span className="font-semibold text-foreground break-all">{formatCurrency((profile.total_income || 0) + (profile.balance || 0))}</span>
+            </div>
+          </div>
+          <div className="flex items-center justify-between">
+            <button onClick={() => navigate("/account")} className="text-[11px] text-muted-foreground hover:text-foreground flex items-center gap-0.5">
+              Lihat detail saldo <ChevronRight className="w-3 h-3" />
+            </button>
+            <Button size="sm" className="h-7 text-[11px] px-4 rounded-full" onClick={() => setWithdrawOpen(true)}>
+              Tarik <ChevronRight className="w-3 h-3 ml-0.5" />
             </Button>
           </div>
         </CardContent>
       </Card>
 
-      {/* Quick Menu Grid - 4 cards */}
-      <div className="grid grid-cols-2 gap-3">
-        {quickMenuItems.map((item) => (
-          <Card 
-            key={item.label} 
-            className="cursor-pointer hover:border-primary/30 transition-colors"
-            onClick={() => item.href && navigate(item.href)}
+      {/* Pemberitahuan pesan marquee */}
+      <div className="flex items-center gap-2 rounded-xl bg-card/70 border border-border/50 px-3 py-2">
+        <Volume2 className="w-3.5 h-3.5 text-primary shrink-0" />
+        <p className="text-[10px] text-muted-foreground truncate">
+          Lengkapi misi harian untuk mendapatkan keberuntungan ekstra
+        </p>
+      </div>
+
+      {/* Quick Grid */}
+      <div className="grid grid-cols-2 gap-2.5">
+        {quickGrid.map((item) => (
+          <button
+            key={item.label}
+            onClick={item.action}
+            className="rounded-xl bg-card/80 border border-border/60 hover:border-primary/40 p-3 text-left transition-colors"
           >
-            <CardContent className="p-3 flex items-center justify-between">
-              <div>
-                <p className="text-xs font-semibold text-foreground">{item.label}</p>
-                <p className="text-[10px] text-muted-foreground mt-0.5">{item.description}</p>
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <p className="text-[11px] font-semibold text-foreground">{item.label}</p>
+                <p className="text-[9px] text-muted-foreground mt-0.5 leading-tight">{item.description}</p>
               </div>
-              <div className={`w-9 h-9 rounded-full ${item.bgColor} flex items-center justify-center shrink-0`}>
+              <div className={`w-8 h-8 rounded-lg ${item.bg} flex items-center justify-center shrink-0`}>
                 <item.icon className={`w-4 h-4 ${item.color}`} />
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </button>
         ))}
       </div>
 
-      {/* Menu List */}
-      <Card className="border-border/50">
+      {/* Menu primary */}
+      <Card className="border-border/60 bg-card/80">
         <CardContent className="p-0">
-          {menuItems.map((item, index) => (
+          {menuPrimary.map((item, i) => (
             <div key={item.label}>
               <button
                 onClick={item.action}
-                className="w-full flex items-center justify-between px-4 py-3 hover:bg-muted/50 transition-colors"
+                className="w-full flex items-center justify-between px-4 py-3 hover:bg-muted/40 transition-colors"
               >
-                <div className="flex items-center gap-3">
-                  <div className={`w-8 h-8 rounded-full bg-muted flex items-center justify-center ${item.color}`}>
-                    <item.icon className="w-4 h-4" />
-                  </div>
-                  <div className="text-left">
-                    <span className="text-xs font-medium text-foreground">{item.label}</span>
-                    <p className="text-[10px] text-muted-foreground">{item.description}</p>
-                  </div>
+                <div className="flex items-center gap-2.5">
+                  <item.icon className="w-4 h-4 text-primary/80" />
+                  <span className="text-xs font-medium text-foreground">{item.label}</span>
                 </div>
-                <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
               </button>
-              {index < menuItems.length - 1 && <Separator />}
+              {i < menuPrimary.length - 1 && <Separator />}
             </div>
           ))}
         </CardContent>
       </Card>
 
+      {/* Menu legal */}
+      <Card className="border-border/60 bg-card/80">
+        <CardContent className="p-0">
+          {menuLegal.map((item, i) => (
+            <div key={item.label}>
+              <button
+                onClick={item.action}
+                className="w-full flex items-center justify-between px-4 py-3 hover:bg-muted/40 transition-colors"
+              >
+                <div className="flex items-center gap-2.5">
+                  <item.icon className="w-4 h-4 text-accent/80" />
+                  <span className="text-xs font-medium text-foreground">{item.label}</span>
+                </div>
+                <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
+              </button>
+              {i < menuLegal.length - 1 && <Separator />}
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+
+      {/* Settings */}
+      <Card className="border-border/60 bg-card/80">
+        <CardContent className="p-0">
+          {menuSettings.map((item, i) => (
+            <div key={item.label}>
+              <button
+                onClick={item.action}
+                className="w-full flex items-center justify-between px-4 py-3 hover:bg-muted/40 transition-colors"
+              >
+                <div className="flex items-center gap-2.5">
+                  <item.icon className="w-4 h-4 text-foreground/70" />
+                  <span className="text-xs font-medium text-foreground">{item.label}</span>
+                </div>
+                <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
+              </button>
+              {i < menuSettings.length - 1 && <Separator />}
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+
+      {/* Admin shortcut */}
+      {isAdmin && (
+        <Card className="border-destructive/30 bg-card/80">
+          <CardContent className="p-0">
+            <button
+              onClick={() => navigate("/admin")}
+              className="w-full flex items-center justify-between px-4 py-3 hover:bg-destructive/10 transition-colors"
+            >
+              <div className="flex items-center gap-2.5">
+                <Shield className="w-4 h-4 text-destructive" />
+                <span className="text-xs font-medium text-destructive">Admin Dashboard</span>
+              </div>
+              <ChevronRight className="w-3.5 h-3.5 text-destructive" />
+            </button>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Logout */}
-      <Card className="border-destructive/20">
+      <Card className="border-border/60 bg-card/80">
         <CardContent className="p-0">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center justify-between px-4 py-3 hover:bg-destructive/10 transition-colors text-destructive"
+            className="w-full flex items-center justify-between px-4 py-3 hover:bg-muted/40 transition-colors"
           >
-            <span className="text-xs font-medium flex items-center gap-2">
-              <LogOut className="w-4 h-4" />
-              Keluar
-            </span>
-            <ChevronRight className="w-4 h-4" />
+            <div className="flex items-center gap-2.5">
+              <LogOut className="w-4 h-4 text-foreground/70" />
+              <span className="text-xs font-medium text-foreground">Keluar</span>
+            </div>
+            <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
           </button>
         </CardContent>
       </Card>
@@ -297,8 +330,13 @@ const Profile = () => {
       <CompanyProfileDialog open={companyDialogOpen} onOpenChange={setCompanyDialogOpen} />
       <RechargeDialog open={rechargeOpen} onOpenChange={setRechargeOpen} onSuccess={refreshProfile} />
       <WithdrawDialog open={withdrawOpen} onOpenChange={setWithdrawOpen} balance={profile.balance} onSuccess={refreshProfile} />
+      <ReferralDialog open={referralOpen} onOpenChange={setReferralOpen} />
+      <DailyCheckinDialog open={checkinOpen} onOpenChange={setCheckinOpen} onSuccess={refreshProfile} />
     </div>
   );
 };
+
+// Coins icon import (used inline)
+import { Coins } from "lucide-react";
 
 export default Profile;

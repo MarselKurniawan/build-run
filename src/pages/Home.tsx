@@ -2,26 +2,24 @@ import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowUpRight, ArrowDownRight, Wallet, LogOut, ShieldCheck, Sparkles, Gift, Bell, PartyPopper, Coins, Sun, Moon } from "lucide-react";
+import { Plane, Radio, ShieldCheck, Sun, Moon, LogOut, Sparkles, Gift, PartyPopper, Coins, ChevronRight, Trophy, Repeat, Zap, Bell, CalendarCheck } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { getProducts, getInvestments, formatCurrency, canClaimToday, updateInvestment, updateProfile, createTransaction, processReferralRabat, Product, Investment } from "@/lib/database";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTheme } from "@/hooks/useTheme";
 import RechargeDialog from "@/components/RechargeDialog";
 import WithdrawDialog from "@/components/WithdrawDialog";
 import InvestDialog from "@/components/InvestDialog";
 import DailyCheckinDialog from "@/components/DailyCheckinDialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { CalendarCheck } from "lucide-react";
 
 const Home = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user, profile, isAdmin, signOut, refreshProfile } = useAuth();
   const { theme, toggleTheme } = useTheme();
-  
+
   const [investments, setInvestments] = useState<Investment[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [rechargeOpen, setRechargeOpen] = useState(false);
@@ -33,7 +31,6 @@ const Home = () => {
   const [claimed, setClaimed] = useState(false);
   const [isClaiming, setIsClaiming] = useState(false);
   const [checkinOpen, setCheckinOpen] = useState(false);
-  const [productCategory, setProductCategory] = useState("all");
 
   const loadData = async () => {
     if (user) {
@@ -53,20 +50,12 @@ const Home = () => {
 
   const handleLogout = async () => {
     await signOut();
-    toast({
-      title: "Logout Berhasil",
-      description: "Sampai jumpa lagi!",
-    });
+    toast({ title: "Logout Berhasil", description: "Sampai jumpa lagi!" });
     navigate("/auth");
   };
 
   const balance = profile?.balance || 0;
-  const vipLevel = profile?.vip_level || 1;
-
-  const displayProducts = useMemo(() => {
-    const filtered = productCategory === "all" ? products : products.filter(p => p.category === productCategory);
-    return filtered.slice(0, 4);
-  }, [products, productCategory]);
+  const vipLevel = profile?.vip_level || 0;
 
   const handleInvest = (product: Product) => {
     setSelectedProduct(product);
@@ -75,8 +64,6 @@ const Home = () => {
 
   const activeInvestments = investments.filter(i => i.status === 'active');
   const totalDailyIncome = activeInvestments.reduce((sum, i) => sum + i.daily_income, 0);
-  
-  // Calculate claimable investments
   const claimableInvestments = activeInvestments.filter(inv => canClaimToday(inv.last_claimed_at));
   const totalClaimable = claimableInvestments.reduce((sum, inv) => sum + inv.daily_income, 0);
 
@@ -88,16 +75,14 @@ const Home = () => {
 
   const handleClaimAll = async () => {
     if (!user || !profile || claimableInvestments.length === 0 || isClaiming) return;
-    
     setIsClaiming(true);
-    
+
     try {
       let totalClaimed = 0;
-      
       for (const investment of claimableInvestments) {
         const newTotalEarned = investment.total_earned + investment.daily_income;
         const newDaysRemaining = investment.days_remaining - 1;
-        
+
         await updateInvestment(investment.id, {
           total_earned: newTotalEarned,
           days_remaining: newDaysRemaining,
@@ -110,15 +95,13 @@ const Home = () => {
           type: 'income',
           amount: investment.daily_income,
           status: 'success',
-          description: `Income harian dari ${investment.product_name}`
+          description: `Pendapatan harian dari Drone ${investment.product_name}`
         });
 
         await processReferralRabat(user.id, investment.daily_income);
-        
         totalClaimed += investment.daily_income;
       }
 
-      // Update profile balance and total income
       await updateProfile(user.id, {
         balance: profile.balance + totalClaimed,
         total_income: profile.total_income + totalClaimed
@@ -126,22 +109,19 @@ const Home = () => {
 
       setClaimed(true);
       setShowConfetti(true);
-
       await loadData();
 
       toast({
         title: "🎉 Klaim Berhasil!",
-        description: `Anda mendapatkan ${formatCurrency(totalClaimed)} dari ${claimableInvestments.length} investasi`,
+        description: `Anda mendapatkan ${formatCurrency(totalClaimed)} dari ${claimableInvestments.length} drone`,
       });
 
-      setTimeout(() => {
-        setClaimDialogOpen(false);
-      }, 2500);
+      setTimeout(() => setClaimDialogOpen(false), 2500);
     } catch (error) {
       console.error('Error claiming income:', error);
       toast({
         title: "Gagal Klaim",
-        description: "Terjadi kesalahan saat mengklaim penghasilan.",
+        description: "Terjadi kesalahan saat mengklaim pendapatan.",
         variant: "destructive",
       });
     } finally {
@@ -149,399 +129,282 @@ const Home = () => {
     }
   };
 
+  const droneOnline = activeInvestments.length;
+
   return (
-    <div className="space-y-6 p-4 pt-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-lg font-heading font-bold text-foreground">
-            {profile ? `Halo, ${profile.name}!` : "Selamat Datang!"}
-          </h1>
-          <p className="text-[11px] text-muted-foreground">Kelola investasi Anda dengan mudah</p>
+    <div className="space-y-4 p-4 pt-5">
+      {/* HERO Drone Mapping Header */}
+      <div className="relative overflow-hidden rounded-2xl bg-hero p-4 pb-3">
+        <div className="absolute inset-0 opacity-30 pointer-events-none">
+          <div className="absolute top-2 right-4 w-2 h-2 rounded-full bg-primary-glow animate-pulse" />
+          <div className="absolute top-8 right-12 w-1 h-1 rounded-full bg-accent" />
+          <div className="absolute top-12 right-2 w-1.5 h-1.5 rounded-full bg-primary-glow" />
         </div>
-        <div className="flex items-center gap-1">
-          <Badge variant="vip" className="text-[10px] px-2 py-0.5">
-            VIP {vipLevel}
-          </Badge>
-          <Button variant="ghost" size="icon" onClick={toggleTheme} className="hover:bg-muted">
-            {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
-          </Button>
-          {isAdmin && (
-            <Button variant="ghost" size="icon" onClick={() => navigate("/admin")} className="hover:bg-primary/20">
-              <ShieldCheck className="w-5 h-5 text-primary" />
+
+        <div className="flex items-start justify-between relative z-10">
+          <div className="min-w-0">
+            <p className="text-[10px] font-semibold tracking-[0.2em] text-primary-glow mb-1">SENT AI</p>
+            <h1 className="text-xl font-heading font-bold text-white leading-tight">Drone Mapping</h1>
+            <p className="text-[10px] text-white/60 mt-0.5">Didukung teknologi kecerdasan buatan</p>
+          </div>
+          <div className="flex items-center gap-1 shrink-0">
+            <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-8 w-8 text-white/70 hover:text-white hover:bg-white/10">
+              {theme === "light" ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
             </Button>
-          )}
-          {user && (
-            <Button variant="ghost" size="icon" onClick={handleLogout} className="hover:bg-destructive/20">
-              <LogOut className="w-5 h-5" />
-            </Button>
-          )}
+            {isAdmin && (
+              <Button variant="ghost" size="icon" onClick={() => navigate("/admin")} className="h-8 w-8 text-primary-glow hover:bg-white/10">
+                <ShieldCheck className="w-4 h-4" />
+              </Button>
+            )}
+            {user && (
+              <Button variant="ghost" size="icon" onClick={handleLogout} className="h-8 w-8 text-white/70 hover:text-white hover:bg-white/10">
+                <LogOut className="w-4 h-4" />
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {/* Status bar */}
+        <div className="mt-4 flex items-center justify-between rounded-xl bg-black/25 border border-white/10 px-3 py-2">
+          <div className="flex items-center gap-2">
+            <span className={`w-2 h-2 rounded-full ${droneOnline > 0 ? 'bg-success' : 'bg-success/60'}`} />
+            <span className="text-[11px] text-white/85">
+              {droneOnline > 0 ? `${droneOnline} drone aktif` : "Tidak ada drone aktif"}
+            </span>
+          </div>
+          <span className="text-[11px] text-white/70">{droneOnline} Drone Online</span>
         </div>
       </div>
 
-      {/* Balance Card */}
-      <Card className="border-primary/20 hover:border-primary/40 transition-colors">
-        <CardContent className="p-4 sm:p-6">
-          <div className="flex items-center gap-2 mb-3">
-            <Wallet className="w-5 h-5 text-primary" />
-            <span className="text-[11px] text-muted-foreground font-medium">Saldo Tersedia</span>
-          </div>
-          <p className="text-xl font-heading font-bold text-primary mb-3 break-all">
-            {formatCurrency(balance)}
-          </p>
-
-          <div className="grid grid-cols-2 gap-3">
-            <Button
-              variant="success"
-              className="flex items-center gap-2"
-              onClick={() => setRechargeOpen(true)}
-            >
-              <ArrowUpRight className="w-4 h-4" />
-              Recharge
-            </Button>
-            <Button
-              variant="outline"
-              className="flex items-center gap-2 border-accent/50 hover:border-accent hover:bg-accent/10"
-              onClick={() => setWithdrawOpen(true)}
-            >
-              <ArrowDownRight className="w-4 h-4" />
-              Withdraw
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Daily Check-in Banner */}
-      <Card 
-        className="bg-gradient-to-r from-primary/10 via-accent/5 to-primary/10 border-primary/40 hover:border-primary/60 transition-all cursor-pointer overflow-hidden"
-        onClick={() => setCheckinOpen(true)}
-      >
-        <CardContent className="p-3 sm:p-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/20 rounded-xl flex items-center justify-center shrink-0">
-              <CalendarCheck className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-xs font-semibold text-foreground">Check-in Harian</p>
-              <p className="text-[10px] text-muted-foreground">Absen setiap hari, dapat hadiah!</p>
-            </div>
-            <Button size="sm" variant="default" className="shrink-0 text-xs" onClick={(e) => { e.stopPropagation(); setCheckinOpen(true); }}>
-              Check-in
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Claim Today Notification Banner - Outside Balance Card */}
-      {claimableInvestments.length > 0 && (
-        <Card 
-          className="bg-gradient-to-r from-success/10 via-primary/5 to-success/10 border-success/40 hover:border-success/60 transition-all cursor-pointer overflow-hidden group"
-          onClick={handleOpenClaimDialog}
-        >
-          <CardContent className="p-3 sm:p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-success/20 rounded-xl flex items-center justify-center shrink-0">
-                <Gift className="w-5 h-5 sm:w-6 sm:h-6 text-success" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1.5 mb-0.5">
-                  <Bell className="w-3 h-3 text-success" />
-                   <p className="text-xs font-semibold text-foreground">Klaim Hari Ini</p>
-                 </div>
-                 <p className="text-[10px] text-muted-foreground">
-                   {claimableInvestments.length} investasi siap diklaim
-                </p>
-              </div>
-              <div className="text-right shrink-0">
-                <p className="text-xs font-bold text-success truncate max-w-[100px] sm:max-w-none">
-                  +{formatCurrency(totalClaimable)}
-                </p>
-                <Button 
-                  size="sm" 
-                  variant="success"
-                  className="mt-1 text-xs"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleOpenClaimDialog();
-                  }}
-                >
-                  {claimableInvestments.length > 1 ? 'Klaim Semua' : 'Klaim'}
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Active Investments Summary */}
-      {activeInvestments.length > 0 && (
-        <Card className="bg-success/10 border-success/30 transition-all">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between gap-2">
-              <div className="min-w-0">
-                <p className="text-[10px] text-muted-foreground">Investasi Aktif</p>
-                <p className="text-sm font-bold text-foreground">{activeInvestments.length} Paket</p>
-              </div>
-              <div className="text-right min-w-0">
-                <p className="text-[10px] text-muted-foreground">Income Harian</p>
-                <p className="text-sm font-bold text-success break-all">
-                  {formatCurrency(totalDailyIncome)}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Popular Products */}
+      {/* Aksi cepat */}
       <div>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-heading font-bold text-foreground flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-vip-gold" />
-            Produk Populer
-          </h2>
-          <Link to="/product">
-            <Button variant="link" className="text-primary p-0 h-auto">
-              Lihat Semua →
-            </Button>
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-xs font-medium text-foreground">Aksi cepat</p>
+          <Link to="/account" className="text-[11px] text-primary flex items-center gap-0.5">
+            Periksa drone saya <ChevronRight className="w-3 h-3" />
           </Link>
         </div>
-
-        {/* Category Tabs */}
-        <Tabs value={productCategory} onValueChange={setProductCategory} className="mb-4">
-          <TabsList className="w-full grid grid-cols-4">
-            <TabsTrigger value="all" className="text-xs">Semua</TabsTrigger>
-            <TabsTrigger value="reguler" className="text-xs">Reguler</TabsTrigger>
-            <TabsTrigger value="promo" className="text-xs">🔥 Promo</TabsTrigger>
-            <TabsTrigger value="vip" className="text-xs">👑 VIP</TabsTrigger>
-          </TabsList>
-        </Tabs>
-
-        <div className="space-y-4">
-          {displayProducts.map((product) => (
-            <Card 
-              key={product.id} 
-              className="transition-all duration-300 cursor-pointer border-primary/20 hover:border-primary/50 overflow-hidden"
-            >
-              {/* Product Image */}
-              <div className="relative h-32 overflow-hidden">
-                <img 
-                  src={product.image} 
-                  alt={product.name}
-                  className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent" />
-                <Badge variant="vip" className="absolute top-3 right-3 text-xs">
-                  VIP {product.vip_level}
-                </Badge>
-                {product.category === 'promo' && (
-                  <Badge className="absolute top-3 left-3 bg-destructive/90 text-destructive-foreground text-[10px]">🔥 PROMO</Badge>
-                )}
-                {product.category === 'vip' && (
-                  <Badge className="absolute top-3 left-3 bg-vip-gold/90 text-secondary-foreground text-[10px]">👑 VIP</Badge>
-                )}
-              </div>
-
-              <CardContent className="p-4">
-                <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <h3 className="font-semibold text-xs text-foreground mb-1">{product.name}</h3>
-                    <p className="text-[10px] text-muted-foreground">{product.description}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-[10px] text-muted-foreground">Harga</p>
-                    {product.promo_price ? (
-                      <div>
-                        <p className="text-[10px] text-muted-foreground line-through">{formatCurrency(product.price)}</p>
-                        <p className="text-sm font-bold text-destructive">{formatCurrency(product.promo_price)}</p>
-                      </div>
-                    ) : (
-                      <p className="text-sm font-bold text-primary">{formatCurrency(product.price)}</p>
-                    )}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-3 gap-3 py-3 border-t border-border/50">
-                  <div>
-                    <p className="text-xs text-muted-foreground mb-1">Harian</p>
-                    {product.promo_daily_income ? (
-                      <div>
-                        <p className="text-[10px] text-muted-foreground line-through">{formatCurrency(product.daily_income)}</p>
-                        <p className="text-sm font-semibold text-success">{formatCurrency(product.promo_daily_income)}</p>
-                      </div>
-                    ) : (
-                      <p className="text-sm font-semibold text-success">{formatCurrency(product.daily_income)}</p>
-                    )}
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground mb-1">Durasi</p>
-                    {product.promo_validity ? (
-                      <div>
-                        <p className="text-[10px] text-muted-foreground line-through">{product.validity} Hari</p>
-                        <p className="text-sm font-semibold text-foreground">{product.promo_validity} Hari</p>
-                      </div>
-                    ) : (
-                      <p className="text-sm font-semibold text-foreground">{product.validity} Hari</p>
-                    )}
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground mb-1">Total</p>
-                    <p className="text-sm font-semibold text-accent">{formatCurrency(product.total_income)}</p>
-                  </div>
-                </div>
-
-                <Button className="w-full mt-3" size="sm" onClick={() => handleInvest(product)}>
-                  Investasi Sekarang
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-          {displayProducts.length === 0 && (
-            <div className="text-center py-8 text-muted-foreground text-sm">
-              Tidak ada produk dalam kategori ini
-            </div>
-          )}
+        <div className="grid grid-cols-2 gap-2.5">
+          <Button
+            className="h-11 text-xs font-semibold rounded-xl bg-primary/90 hover:bg-primary"
+            onClick={handleOpenClaimDialog}
+            disabled={claimableInvestments.length === 0}
+          >
+            <Zap className="w-3.5 h-3.5 mr-1.5" />
+            Mulai Misi
+          </Button>
+          <Button
+            variant="secondary"
+            className="h-11 text-xs font-semibold rounded-xl bg-secondary/80 hover:bg-secondary"
+            onClick={() => navigate("/product")}
+          >
+            Sewa drone
+          </Button>
         </div>
       </div>
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-3 gap-2">
-        <Card className="border-success/20 hover:border-success/40 transition-colors overflow-hidden">
-          <CardContent className="p-3">
-            <p className="text-[10px] sm:text-xs text-muted-foreground mb-1">Total Income</p>
-            <p className="text-xs sm:text-sm font-bold text-success truncate">
-              {formatCurrency(profile?.total_income || 0)}
-            </p>
-          </CardContent>
-        </Card>
-        <Card className="border-primary/20 hover:border-primary/40 transition-colors overflow-hidden">
-          <CardContent className="p-3">
-            <p className="text-[10px] sm:text-xs text-muted-foreground mb-1">Komisi</p>
-            <p className="text-xs sm:text-sm font-bold text-primary truncate">
-              {formatCurrency(profile?.team_income || 0)}
-            </p>
-          </CardContent>
-        </Card>
-        <Card className="border-vip-gold/20 hover:border-vip-gold/40 transition-colors overflow-hidden">
-          <CardContent className="p-3">
-            <p className="text-[10px] sm:text-xs text-muted-foreground mb-1">Rabat</p>
-            <p className="text-xs sm:text-sm font-bold text-vip-gold truncate">
-              {formatCurrency(profile?.rabat_income || 0)}
-            </p>
-          </CardContent>
-        </Card>
+      {/* Marquee bar */}
+      <div className="flex items-center gap-2 rounded-xl bg-card/70 border border-border/50 px-3 py-2 overflow-hidden">
+        <Radio className="w-3.5 h-3.5 text-primary shrink-0" />
+        <p className="text-[10px] text-muted-foreground truncate">
+          Selesaikan misi harian untuk mendapatkan keberuntungan ekstra. Pertahankan drone aktif setiap hari.
+        </p>
       </div>
 
-      {/* Dialogs */}
-      <RechargeDialog
-        open={rechargeOpen}
-        onOpenChange={setRechargeOpen}
-        onSuccess={loadData}
-      />
-      <WithdrawDialog
-        open={withdrawOpen}
-        onOpenChange={setWithdrawOpen}
-        balance={balance}
-        onSuccess={loadData}
-      />
-      <DailyCheckinDialog
-        open={checkinOpen}
-        onOpenChange={setCheckinOpen}
-        onSuccess={loadData}
-      />
-      <InvestDialog
-        open={investOpen}
-        onOpenChange={setInvestOpen}
-        product={selectedProduct}
-        balance={balance}
-        onSuccess={loadData}
-      />
+      {/* Progress Penerbangan */}
+      <Card className="border-primary/25 bg-card/80 overflow-hidden">
+        <CardContent className="p-4">
+          <div className="flex items-start justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-primary/15 flex items-center justify-center">
+                <Plane className="w-4 h-4 text-primary" />
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-foreground">Progress Penerbangan</p>
+                <p className="text-[10px] text-muted-foreground">Terbang setiap hari untuk hadiah</p>
+              </div>
+            </div>
+            <Badge variant="outline" className="text-[10px] px-2 py-0 border-primary/40 text-primary">
+              Level drone: VIP {vipLevel}
+            </Badge>
+          </div>
 
-      {/* Claim All Dialog with Confetti */}
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[11px] text-muted-foreground">Pendapatan harian aktif</span>
+            <span className="text-sm font-bold text-primary break-all">{formatCurrency(totalDailyIncome)}</span>
+          </div>
+
+          <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden mb-2">
+            <div
+              className="h-full bg-gradient-primary transition-all"
+              style={{ width: `${Math.min((droneOnline / 5) * 100, 100)}%` }}
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <p className="text-[10px] text-muted-foreground">
+              {droneOnline > 0 ? `Anda sudah aktif bersama kami ${droneOnline} drone` : 'Belum ada drone aktif hari ini'}
+            </p>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-6 text-[10px] text-primary hover:text-primary px-2 rounded-full bg-primary/10 hover:bg-primary/20"
+              onClick={() => navigate("/product")}
+            >
+              Lebih banyak <ChevronRight className="w-3 h-3 ml-0.5" />
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Eksklusif untuk Anda — 3 cards */}
+      <div>
+        <p className="text-xs font-medium text-foreground mb-2">Eksklusif untuk Anda</p>
+        <div className="grid grid-cols-3 gap-2">
+          <button
+            onClick={() => navigate("/account")}
+            className="rounded-xl bg-card/80 border border-border/50 hover:border-primary/40 p-3 text-left transition-colors"
+          >
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary/30 to-accent/20 flex items-center justify-center mb-2">
+              <Trophy className="w-5 h-5 text-primary-glow" />
+            </div>
+            <p className="text-[11px] font-semibold text-foreground">Tantangan</p>
+          </button>
+          <button
+            onClick={() => navigate("/team")}
+            className="rounded-xl bg-card/80 border border-border/50 hover:border-primary/40 p-3 text-left transition-colors"
+          >
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-accent/30 to-primary/20 flex items-center justify-center mb-2">
+              <Repeat className="w-5 h-5 text-accent" />
+            </div>
+            <p className="text-[11px] font-semibold text-foreground">Menukarkan</p>
+          </button>
+          <button
+            onClick={() => setCheckinOpen(true)}
+            className="rounded-xl bg-card/80 border border-border/50 hover:border-primary/40 p-3 text-left transition-colors"
+          >
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-vip-gold/30 to-primary/20 flex items-center justify-center mb-2">
+              <Gift className="w-5 h-5 text-vip-gold" />
+            </div>
+            <p className="text-[11px] font-semibold text-foreground">Keberuntungan</p>
+          </button>
+        </div>
+      </div>
+
+      {/* Insight AI */}
+      <Card className="border-primary/25 bg-gradient-to-br from-primary/10 to-card/80">
+        <CardContent className="p-3.5">
+          <div className="flex items-center gap-1.5 mb-1">
+            <Sparkles className="w-3.5 h-3.5 text-primary-glow" />
+            <p className="text-xs font-semibold text-foreground">Insight AI</p>
+          </div>
+          <p className="text-[11px] text-foreground/80 mb-1">
+            {droneOnline > 0
+              ? `Efisiensi pemetaan meningkat ${Math.min(droneOnline * 4, 24)}% dibanding kemarin`
+              : "Aktifkan drone untuk mulai pemetaan"}
+          </p>
+          <p className="text-[10px] text-muted-foreground">Tidak ada gangguan • Sistem berjalan normal</p>
+        </CardContent>
+      </Card>
+
+      {/* Daily Check-in compact */}
+      <Card
+        className="border-border/50 bg-card/80 cursor-pointer hover:border-primary/40 transition-colors"
+        onClick={() => setCheckinOpen(true)}
+      >
+        <CardContent className="p-3 flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-primary/15 flex items-center justify-center shrink-0">
+            <CalendarCheck className="w-4 h-4 text-primary" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-semibold text-foreground">Check-in Harian</p>
+            <p className="text-[10px] text-muted-foreground">Absen setiap hari, dapat hadiah</p>
+          </div>
+          <Button size="sm" className="h-7 text-[11px] rounded-full px-3" onClick={(e) => { e.stopPropagation(); setCheckinOpen(true); }}>
+            Check-in
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Claim banner if available */}
+      {claimableInvestments.length > 0 && (
+        <Card
+          className="border-success/30 bg-card/80 cursor-pointer hover:border-success/50 transition-colors"
+          onClick={handleOpenClaimDialog}
+        >
+          <CardContent className="p-3 flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-success/15 flex items-center justify-center shrink-0">
+              <Bell className="w-4 h-4 text-success" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-semibold text-foreground">Klaim Pendapatan Hari Ini</p>
+              <p className="text-[10px] text-muted-foreground">{claimableInvestments.length} drone siap diklaim</p>
+            </div>
+            <div className="text-right shrink-0">
+              <p className="text-xs font-bold text-success break-all">+{formatCurrency(totalClaimable)}</p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Dialogs */}
+      <RechargeDialog open={rechargeOpen} onOpenChange={setRechargeOpen} onSuccess={loadData} />
+      <WithdrawDialog open={withdrawOpen} onOpenChange={setWithdrawOpen} balance={balance} onSuccess={loadData} />
+      <DailyCheckinDialog open={checkinOpen} onOpenChange={setCheckinOpen} onSuccess={loadData} />
+      <InvestDialog open={investOpen} onOpenChange={setInvestOpen} product={selectedProduct} balance={balance} onSuccess={loadData} />
+
+      {/* Claim All Dialog */}
       <Dialog open={claimDialogOpen} onOpenChange={setClaimDialogOpen}>
-        <DialogContent className="max-w-sm bg-gradient-to-br from-background via-background to-success/10 border-success/30">
+        <DialogContent className="max-w-sm border-success/30">
           <DialogHeader>
-            <DialogTitle className="text-center text-xl font-heading">
-              {claimed ? "🎉 Selamat!" : "Klaim Income Hari Ini"}
+            <DialogTitle className="text-center text-base font-heading">
+              {claimed ? "🎉 Selamat!" : "Klaim Pendapatan Drone"}
             </DialogTitle>
           </DialogHeader>
-          
-          <div className="relative py-6">
-            {/* Confetti Animation */}
+
+          <div className="relative py-4">
             {showConfetti && (
               <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                {[...Array(30)].map((_, i) => (
-                  <div 
-                    key={i} 
-                    className="absolute animate-confetti" 
-                    style={{ 
-                      left: `${Math.random() * 100}%`, 
-                      animationDelay: `${Math.random() * 0.5}s`, 
-                      animationDuration: `${1 + Math.random() * 1}s` 
+                {[...Array(24)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="absolute animate-confetti"
+                    style={{
+                      left: `${Math.random() * 100}%`,
+                      animationDelay: `${Math.random() * 0.5}s`,
+                      animationDuration: `${1 + Math.random() * 1}s`
                     }}
                   >
-                    <Sparkles 
-                      className="w-4 h-4" 
-                      style={{ color: ['#00F5FF', '#FF00E5', '#FFD700', '#00FF88'][Math.floor(Math.random() * 4)] }} 
-                    />
+                    <Sparkles className="w-3.5 h-3.5 text-primary" />
                   </div>
                 ))}
               </div>
             )}
 
-            <div className={`flex flex-col items-center gap-4 transition-all duration-500 ${claimed ? 'scale-110' : ''}`}>
-              <div className={`relative ${claimed ? 'animate-bounce' : 'animate-pulse'}`}>
-                <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-success via-primary to-success flex items-center justify-center">
-                  {claimed ? (
-                    <PartyPopper className="w-12 h-12 text-primary-foreground" />
-                  ) : (
-                    <Gift className="w-12 h-12 text-primary-foreground" />
-                  )}
-                </div>
-                {claimed && (
-                  <div className="absolute -top-2 -right-2 animate-ping">
-                    <Coins className="w-6 h-6 text-accent" />
-                  </div>
-                )}
+            <div className="flex flex-col items-center gap-3">
+              <div className="w-20 h-20 rounded-2xl bg-gradient-primary flex items-center justify-center">
+                {claimed ? <PartyPopper className="w-10 h-10 text-primary-foreground" /> : <Gift className="w-10 h-10 text-primary-foreground" />}
               </div>
 
-              <div className="text-center space-y-2">
-                <p className="text-sm text-muted-foreground">
-                  {claimableInvestments.length} Investasi Aktif
-                </p>
-                <p className={`text-3xl font-bold transition-all duration-300 ${claimed ? 'text-success scale-125' : 'text-foreground'}`}>
+              <div className="text-center space-y-1">
+                <p className="text-xs text-muted-foreground">{claimableInvestments.length} drone aktif</p>
+                <p className="text-2xl font-bold text-foreground break-all">
                   {claimed ? '+' : ''}{formatCurrency(totalClaimable)}
                 </p>
-                {claimed && (
-                  <p className="text-sm text-success animate-fade-in">
-                    Berhasil ditambahkan ke saldo!
-                  </p>
-                )}
+                {claimed && <p className="text-xs text-success">Berhasil ditambahkan ke saldo!</p>}
               </div>
             </div>
-
-            {claimed && (
-              <div className="absolute inset-0 bg-gradient-to-t from-success/20 to-transparent rounded-xl animate-pulse" />
-            )}
           </div>
 
           {!claimed && (
-            <Button 
-              onClick={handleClaimAll} 
+            <Button
+              onClick={handleClaimAll}
               disabled={isClaiming}
-              className="w-full bg-gradient-to-r from-success to-primary hover:from-success/90 hover:to-primary/90 text-primary-foreground font-semibold h-12 shadow-lg shadow-success/30"
+              className="w-full h-11 text-sm font-semibold"
             >
-              <Gift className="w-5 h-5 mr-2" />
+              <Coins className="w-4 h-4 mr-2" />
               {isClaiming ? 'Memproses...' : claimableInvestments.length > 1 ? 'Klaim Semua Sekarang' : 'Klaim Sekarang'}
             </Button>
-          )}
-
-          {claimed && (
-            <div className="flex items-center justify-center gap-2 text-success animate-fade-in">
-              <Sparkles className="w-4 h-4" />
-              <span className="font-medium">Semua income berhasil di-klaim!</span>
-              <Sparkles className="w-4 h-4" />
-            </div>
           )}
         </DialogContent>
       </Dialog>

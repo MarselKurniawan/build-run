@@ -1,77 +1,75 @@
 import { useState } from "react";
 import { NavLink } from "@/components/NavLink";
-import { Home, Package, Users, UserCircle, LayoutGrid } from "lucide-react";
+import { Home, Store, Hexagon, UserCircle, LayoutGrid } from "lucide-react";
 import QuickMenuSheet from "@/components/QuickMenuSheet";
 
 const Layout = ({ children, wide = false }: { children: React.ReactNode; wide?: boolean }) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gradient-background pb-20">
-      {/* Decorative background elements */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-0 w-80 h-80 bg-accent/10 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-0 w-64 h-64 bg-vip-gold/5 rounded-full blur-3xl" />
+    <div className="min-h-screen bg-drone-radial pb-20">
+      {/* Subtle drone-grid backdrop */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden opacity-60">
+        <div className="absolute -top-20 -right-20 w-[420px] h-[420px] bg-primary/15 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 -left-20 w-[360px] h-[360px] bg-accent/12 rounded-full blur-3xl" />
       </div>
 
       <div className={`mx-auto ${wide ? "max-w-4xl" : "max-w-md"} relative z-10`}>
         {children}
       </div>
-      
+
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 glass border-t border-primary/20 backdrop-blur-xl bg-card/90">
-        <div className="mx-auto max-w-md grid grid-cols-5 items-center py-3">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border/60 backdrop-blur-xl bg-card/85">
+        <div className="mx-auto max-w-md grid grid-cols-5 items-center py-2.5">
           <NavLink
             to="/"
-            className="flex flex-col items-center gap-1 py-2 text-muted-foreground transition-all hover:text-primary"
-            activeClassName="text-primary font-medium"
+            className="flex flex-col items-center gap-0.5 py-1.5 text-muted-foreground transition-colors"
+            activeClassName="text-primary"
           >
-            <Home className="w-5 h-5" />
-            <span className="text-xs">Beranda</span>
+            <Home className="w-5 h-5" strokeWidth={1.75} />
+            <span className="text-[10px]">Rumah</span>
           </NavLink>
-          
+
           <NavLink
             to="/product"
-            className="flex flex-col items-center gap-1 py-2 text-muted-foreground transition-all hover:text-primary"
-            activeClassName="text-primary font-medium"
+            className="flex flex-col items-center gap-0.5 py-1.5 text-muted-foreground transition-colors"
+            activeClassName="text-primary"
           >
-            <Package className="w-5 h-5" />
-            <span className="text-xs">Produk</span>
+            <Store className="w-5 h-5" strokeWidth={1.75} />
+            <span className="text-[10px]">Toko</span>
           </NavLink>
-          
-          {/* Center Menu Button - Prominent */}
+
+          {/* Center Menu */}
           <button
             onClick={() => setMenuOpen(true)}
-            className="flex flex-col items-center gap-1 -mt-6"
+            className="flex flex-col items-center gap-0.5 -mt-7"
           >
-            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary via-accent to-vip-gold flex items-center justify-center">
-              <LayoutGrid className="w-7 h-7 text-white" />
+            <div className="w-12 h-12 rounded-2xl bg-gradient-primary flex items-center justify-center shadow-glow">
+              <Hexagon className="w-6 h-6 text-primary-foreground" strokeWidth={2} />
             </div>
-            <span className="text-xs text-primary font-medium">Menu</span>
+            <span className="text-[10px] text-primary font-medium mt-0.5">Beranda</span>
           </button>
-          
+
           <NavLink
             to="/team"
-            className="flex flex-col items-center gap-1 py-2 text-muted-foreground transition-all hover:text-primary"
-            activeClassName="text-primary font-medium"
+            className="flex flex-col items-center gap-0.5 py-1.5 text-muted-foreground transition-colors"
+            activeClassName="text-primary"
           >
-            <Users className="w-5 h-5" />
-            <span className="text-xs">Tim</span>
+            <LayoutGrid className="w-5 h-5" strokeWidth={1.75} />
+            <span className="text-[10px]">Tim</span>
           </NavLink>
-          
+
           <NavLink
             to="/profile"
-            className="flex flex-col items-center gap-1 py-2 text-muted-foreground transition-all hover:text-primary"
-            activeClassName="text-primary font-medium"
+            className="flex flex-col items-center gap-0.5 py-1.5 text-muted-foreground transition-colors"
+            activeClassName="text-primary"
           >
-            <UserCircle className="w-5 h-5" />
-            <span className="text-xs">Profil</span>
+            <UserCircle className="w-5 h-5" strokeWidth={1.75} />
+            <span className="text-[10px]">Saya</span>
           </NavLink>
         </div>
       </nav>
 
-      {/* Quick Menu Sheet */}
       <QuickMenuSheet open={menuOpen} onOpenChange={setMenuOpen} />
     </div>
   );
