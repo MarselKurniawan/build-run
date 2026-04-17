@@ -6,6 +6,10 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Phone, Lock, Loader2, ArrowLeft, CheckCircle } from "lucide-react";
 
+// DEV MODE: skip OTP sementara — sinkron dengan flag di Auth.tsx
+const DEV_SKIP_OTP = true;
+const DEV_BYPASS_CODE = "DEV_SKIP_OTP_BYPASS";
+
 type Step = "phone" | "otp" | "newPassword" | "success";
 
 interface ForgotPasswordFlowProps {
