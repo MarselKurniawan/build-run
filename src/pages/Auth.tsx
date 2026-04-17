@@ -12,6 +12,10 @@ import { Eye, EyeOff, TrendingUp, Shield, Users, Sparkles, Zap, Phone, Mail, Loa
 import { z } from "zod";
 import ForgotPasswordFlow from "@/components/ForgotPasswordFlow";
 
+// DEV MODE: skip OTP sementara (UI OTP tetep ada tapi auto-pass).
+// Set ke false untuk aktifin verifikasi OTP normal.
+const DEV_SKIP_OTP = true;
+
 const phoneSchema = z.string().min(10, "Nomor WhatsApp minimal 10 digit").regex(/^[0-9+]+$/, "Format nomor tidak valid");
 const passwordSchema = z.string().min(6, "Password minimal 6 karakter");
 const emailSchema = z.string().email("Format email tidak valid").optional().or(z.literal(""));
