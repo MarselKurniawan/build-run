@@ -371,8 +371,8 @@ const Account = () => {
             <TabsContent value="recharge" className="space-y-2">
               {transactions.filter((t) => t.type === "recharge").length === 0 ? (
                 <div className="text-center py-8">
-                  <ArrowUpRight className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
-                  <p className="text-muted-foreground">Belum ada recharge</p>
+                  <ArrowUpRight className="w-10 h-10 text-muted-foreground/30 mx-auto mb-2" />
+                  <p className="text-xs text-muted-foreground">Belum ada isi ulang</p>
                 </div>
               ) : (
                 transactions
@@ -414,8 +414,8 @@ const Account = () => {
             <TabsContent value="withdraw" className="space-y-2">
               {transactions.filter((t) => t.type === "withdraw").length === 0 ? (
                 <div className="text-center py-8">
-                  <ArrowDownRight className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
-                  <p className="text-muted-foreground">Belum ada withdraw</p>
+                  <ArrowDownRight className="w-10 h-10 text-muted-foreground/30 mx-auto mb-2" />
+                  <p className="text-xs text-muted-foreground">Belum ada penarikan</p>
                 </div>
               ) : (
                 transactions
