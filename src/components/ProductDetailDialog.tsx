@@ -167,7 +167,7 @@ const ProductDetailDialog = ({
                   onInvest();
                 }}
               >
-                Investasi Sekarang
+                Sewa Drone Sekarang
               </Button>
             )}
           </div>

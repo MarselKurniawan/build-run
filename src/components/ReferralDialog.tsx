@@ -24,12 +24,12 @@ const ReferralDialog = ({ open, onOpenChange, referralCode }: ReferralDialogProp
   };
 
   const shareWhatsApp = () => {
-    const message = `🚀 Bergabung dengan InvestPro dan dapatkan keuntungan investasi hingga 10% per hari!\n\nGunakan kode referral saya: ${referralCode}\n\nDaftar sekarang: ${referralLink}`;
+    const message = `🚀 Bergabung dengan SENT AI Drone Mapping!\n\nGunakan kode undangan: ${referralCode}\n\nDaftar: ${referralLink}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
   };
 
   const shareTelegram = () => {
-    const message = `🚀 Bergabung dengan InvestPro!\n\nKode referral: ${referralCode}\n\nDaftar: ${referralLink}`;
+    const message = `🚀 Bergabung dengan SENT AI Drone!\n\nKode undangan: ${referralCode}\n\nDaftar: ${referralLink}`;
     window.open(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(message)}`, '_blank');
   };
 

@@ -52,7 +52,7 @@ const Team = () => {
   };
 
   const shareWhatsApp = () => {
-    const message = `🚀 Bergabung dengan InvestPro!\n\nKode referral: ${referralCode}\nDaftar: ${referralLink}`;
+    const message = `🚀 Bergabung dengan SENT AI Drone Mapping!\n\nKode undangan: ${referralCode}\nDaftar: ${referralLink}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
   };
 
