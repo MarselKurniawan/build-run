@@ -36,6 +36,7 @@ import {
   Award,
   Info,
   Download,
+  Coins,
 } from "lucide-react";
 import ProfileDialog from "@/components/ProfileDialog";
 import CouponDialog from "@/components/CouponDialog";
