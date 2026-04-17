@@ -135,6 +135,16 @@ const Auth = () => {
 
     setOtpSending(true);
     try {
+      if (DEV_SKIP_OTP) {
+        // Dev mode: skip kirim OTP, langsung lanjut ke step OTP dengan kode auto-fill
+        toast({ title: "Mode Dev: OTP di-skip", description: "Klik 'Verifikasi & Daftar' untuk lanjut" });
+        setOtpCode("000000");
+        setOtpStep('otp');
+        setOtpCountdown(0);
+        setOtpSending(false);
+        return;
+      }
+
       const { data, error } = await supabase.functions.invoke("send-otp", {
         body: { phone: registerPhone },
       });
