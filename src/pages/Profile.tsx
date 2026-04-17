@@ -330,13 +330,10 @@ const Profile = () => {
       <CompanyProfileDialog open={companyDialogOpen} onOpenChange={setCompanyDialogOpen} />
       <RechargeDialog open={rechargeOpen} onOpenChange={setRechargeOpen} onSuccess={refreshProfile} />
       <WithdrawDialog open={withdrawOpen} onOpenChange={setWithdrawOpen} balance={profile.balance} onSuccess={refreshProfile} />
-      <ReferralDialog open={referralOpen} onOpenChange={setReferralOpen} />
+      <ReferralDialog open={referralOpen} onOpenChange={setReferralOpen} referralCode={profile.referral_code || ''} />
       <DailyCheckinDialog open={checkinOpen} onOpenChange={setCheckinOpen} onSuccess={refreshProfile} />
     </div>
   );
 };
-
-// Coins icon import (used inline)
-import { Coins } from "lucide-react";
 
 export default Profile;
