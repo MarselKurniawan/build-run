@@ -309,17 +309,17 @@ const Account = () => {
         </Card>
       )}
 
-      {/* Transaction History */}
-      <Card className="shadow-card">
-        <CardHeader>
-          <CardTitle className="text-base">Riwayat Transaksi</CardTitle>
+      {/* Catatan Penerbangan / Transaction History */}
+      <Card className="bg-card/80 border-border/60">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-xs">Catatan Penerbangan</CardTitle>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="all" className="w-full">
-            <TabsList className="w-full grid grid-cols-3 mb-4">
-              <TabsTrigger value="all" className="text-xs">Semua</TabsTrigger>
-              <TabsTrigger value="recharge" className="text-xs">Recharge</TabsTrigger>
-              <TabsTrigger value="withdraw" className="text-xs">Withdraw</TabsTrigger>
+            <TabsList className="w-full grid grid-cols-3 mb-3 h-8">
+              <TabsTrigger value="all" className="text-[11px]">Semua</TabsTrigger>
+              <TabsTrigger value="recharge" className="text-[11px]">Isi Ulang</TabsTrigger>
+              <TabsTrigger value="withdraw" className="text-[11px]">Tarik</TabsTrigger>
             </TabsList>
 
             <TabsContent value="all" className="space-y-2">
