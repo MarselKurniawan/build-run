@@ -6,6 +6,10 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Phone, Lock, Loader2, ArrowLeft, CheckCircle } from "lucide-react";
 
+// DEV MODE: skip OTP sementara — sinkron dengan flag di Auth.tsx
+const DEV_SKIP_OTP = true;
+const DEV_BYPASS_CODE = "DEV_SKIP_OTP_BYPASS";
+
 type Step = "phone" | "otp" | "newPassword" | "success";
 
 interface ForgotPasswordFlowProps {
@@ -36,6 +40,15 @@ const ForgotPasswordFlow = ({ onBack }: ForgotPasswordFlowProps) => {
 
     setIsLoading(true);
     try {
+      if (DEV_SKIP_OTP) {
+        toast({ title: "Mode Dev: OTP di-skip", description: "Lanjut langsung set password baru" });
+        setOtpCode(DEV_BYPASS_CODE);
+        setStep("otp");
+        setOtpCountdown(0);
+        setIsLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase.functions.invoke("send-otp", {
         body: { phone },
       });
@@ -60,6 +73,11 @@ const ForgotPasswordFlow = ({ onBack }: ForgotPasswordFlowProps) => {
   };
 
   const handleVerifyOtp = () => {
+    if (DEV_SKIP_OTP) {
+      // Dev: skip verifikasi, langsung lanjut
+      setStep("newPassword");
+      return;
+    }
     if (otpCode.length !== 6) {
       toast({ title: "Error", description: "Masukkan 6 digit kode OTP", variant: "destructive" });
       return;

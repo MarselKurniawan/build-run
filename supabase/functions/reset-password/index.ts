@@ -32,38 +32,46 @@ Deno.serve(async (req) => {
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Verify OTP first
-    const { data: otpRecord, error: fetchError } = await supabase
-      .from("otp_codes")
-      .select("*")
-      .eq("phone", phone)
-      .eq("code", code)
-      .eq("is_verified", false)
-      .gt("expires_at", new Date().toISOString())
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
+    // DEV bypass — sementara skip OTP. Hapus block ini ketika OTP diaktifkan kembali.
+    const DEV_BYPASS_CODE = "DEV_SKIP_OTP_BYPASS";
+    const isDevBypass = code === DEV_BYPASS_CODE;
 
-    if (fetchError) {
-      console.error("Error fetching OTP:", fetchError);
-      return new Response(
-        JSON.stringify({ error: "Terjadi kesalahan server" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    if (!isDevBypass) {
+      // Verify OTP first
+      const { data: otpRecord, error: fetchError } = await supabase
+        .from("otp_codes")
+        .select("*")
+        .eq("phone", phone)
+        .eq("code", code)
+        .eq("is_verified", false)
+        .gt("expires_at", new Date().toISOString())
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (fetchError) {
+        console.error("Error fetching OTP:", fetchError);
+        return new Response(
+          JSON.stringify({ error: "Terjadi kesalahan server" }),
+          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      if (!otpRecord) {
+        return new Response(
+          JSON.stringify({ error: "Kode OTP salah atau sudah kadaluarsa" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      // Mark OTP as verified
+      await supabase
+        .from("otp_codes")
+        .update({ is_verified: true })
+        .eq("id", otpRecord.id);
+    } else {
+      console.log("⚠️ DEV bypass aktif untuk phone:", phone);
     }
-
-    if (!otpRecord) {
-      return new Response(
-        JSON.stringify({ error: "Kode OTP salah atau sudah kadaluarsa" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    // Mark OTP as verified
-    await supabase
-      .from("otp_codes")
-      .update({ is_verified: true })
-      .eq("id", otpRecord.id);
 
     // Find user by phone in profiles
     const { data: profile, error: profileError } = await supabase

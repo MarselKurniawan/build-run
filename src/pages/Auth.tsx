@@ -12,6 +12,10 @@ import { Eye, EyeOff, TrendingUp, Shield, Users, Sparkles, Zap, Phone, Mail, Loa
 import { z } from "zod";
 import ForgotPasswordFlow from "@/components/ForgotPasswordFlow";
 
+// DEV MODE: skip OTP sementara (UI OTP tetep ada tapi auto-pass).
+// Set ke false untuk aktifin verifikasi OTP normal.
+const DEV_SKIP_OTP = true;
+
 const phoneSchema = z.string().min(10, "Nomor WhatsApp minimal 10 digit").regex(/^[0-9+]+$/, "Format nomor tidak valid");
 const passwordSchema = z.string().min(6, "Password minimal 6 karakter");
 const emailSchema = z.string().email("Format email tidak valid").optional().or(z.literal(""));
@@ -131,6 +135,16 @@ const Auth = () => {
 
     setOtpSending(true);
     try {
+      if (DEV_SKIP_OTP) {
+        // Dev mode: skip kirim OTP, langsung lanjut ke step OTP dengan kode auto-fill
+        toast({ title: "Mode Dev: OTP di-skip", description: "Klik 'Verifikasi & Daftar' untuk lanjut" });
+        setOtpCode("000000");
+        setOtpStep('otp');
+        setOtpCountdown(0);
+        setOtpSending(false);
+        return;
+      }
+
       const { data, error } = await supabase.functions.invoke("send-otp", {
         body: { phone: registerPhone },
       });
@@ -164,19 +178,21 @@ const Auth = () => {
 
     setIsLoading(true);
     try {
-      // Verify OTP
-      const { data, error: verifyError } = await supabase.functions.invoke("verify-otp", {
-        body: { phone: registerPhone, code: otpCode },
-      });
-
-      if (verifyError || !data?.success) {
-        toast({
-          title: "Verifikasi Gagal",
-          description: data?.error || "Kode OTP salah atau kadaluarsa",
-          variant: "destructive",
+      // Verify OTP (skipped in dev mode)
+      if (!DEV_SKIP_OTP) {
+        const { data, error: verifyError } = await supabase.functions.invoke("verify-otp", {
+          body: { phone: registerPhone, code: otpCode },
         });
-        setIsLoading(false);
-        return;
+
+        if (verifyError || !data?.success) {
+          toast({
+            title: "Verifikasi Gagal",
+            description: data?.error || "Kode OTP salah atau kadaluarsa",
+            variant: "destructive",
+          });
+          setIsLoading(false);
+          return;
+        }
       }
 
       // OTP verified, proceed with registration
