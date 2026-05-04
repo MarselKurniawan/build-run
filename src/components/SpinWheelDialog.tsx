@@ -14,15 +14,19 @@ interface SpinWheelDialogProps {
   onSuccess: () => void;
 }
 
+// Hadiah Rp 1.000 – Rp 50.000
+// Probabilitas: 90% receh (1K-5K), 10% sisanya (10K-50K)
 const REWARDS = [
-  { label: "5K", amount: 5000, fill: "hsl(217 90% 58%)" },
-  { label: "10K", amount: 10000, fill: "hsl(199 89% 48%)" },
-  { label: "25K", amount: 25000, fill: "hsl(217 90% 50%)" },
-  { label: "50K", amount: 50000, fill: "hsl(231 80% 55%)" },
-  { label: "100K", amount: 100000, fill: "hsl(217 90% 42%)" },
-  { label: "250K", amount: 250000, fill: "hsl(262 70% 55%)" },
-  { label: "500K", amount: 500000, fill: "hsl(38 92% 50%)" },
-  { label: "1JT", amount: 1000000, fill: "hsl(45 96% 55%)" },
+  { label: "1K", amount: 1000, fill: "hsl(217 90% 58%)", weight: 35 },   // receh
+  { label: "2K", amount: 2000, fill: "hsl(199 89% 48%)", weight: 28 },   // receh
+  { label: "3K", amount: 3000, fill: "hsl(217 90% 50%)", weight: 17 },   // receh
+  { label: "5K", amount: 5000, fill: "hsl(231 80% 55%)", weight: 10 },   // receh
+  // total receh = 90
+  { label: "10K", amount: 10000, fill: "hsl(217 90% 42%)", weight: 5 },  // sisanya
+  { label: "15K", amount: 15000, fill: "hsl(262 70% 55%)", weight: 3 },  // sisanya
+  { label: "25K", amount: 25000, fill: "hsl(38 92% 50%)", weight: 1.5 }, // sisanya
+  { label: "50K", amount: 50000, fill: "hsl(45 96% 55%)", weight: 0.5 }, // sisanya
+  // total sisanya = 10
 ];
 
 const N = REWARDS.length;
@@ -72,12 +76,11 @@ const SpinWheelDialog = ({ open, onOpenChange, onSuccess }: SpinWheelDialogProps
     setResultIdx(null);
 
     const ticket = tickets[0];
-    const weights = [25, 20, 18, 14, 10, 7, 4, 2];
-    const totalW = weights.reduce((a, b) => a + b, 0);
+    const totalW = REWARDS.reduce((a, b) => a + b.weight, 0);
     let r = Math.random() * totalW;
     let idx = 0;
-    for (let i = 0; i < weights.length; i++) {
-      r -= weights[i];
+    for (let i = 0; i < REWARDS.length; i++) {
+      r -= REWARDS[i].weight;
       if (r <= 0) { idx = i; break; }
     }
 
