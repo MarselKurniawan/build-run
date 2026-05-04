@@ -87,7 +87,7 @@ const Profile = () => {
   const quickGrid = [
     { icon: Share2, label: "Undang pengguna", description: "Bagikan undangan Anda", action: () => setReferralOpen(true), color: "text-accent", bg: "bg-accent/10" },
     { icon: Crown, label: "VIP", description: "Dapatkan hak eksklusif lebih banyak!", action: () => navigate("/team"), color: "text-vip-gold", bg: "bg-vip-gold/10" },
-    { icon: Landmark, label: "Manajemen", description: "Atur kartu bank Anda untuk menarik uang!", action: () => setBankDialogOpen(true), color: "text-primary", bg: "bg-primary/10" },
+    { icon: Landmark, label: "Akun Bank", description: "Atur rekening untuk tarik dana", action: () => setBankDialogOpen(true), color: "text-primary", bg: "bg-primary/10" },
     { icon: UserIcon, label: "Tim", description: "Bentuk tim dan lihat mereka disini!", action: () => navigate("/team"), color: "text-success", bg: "bg-success/10" },
   ];
 
