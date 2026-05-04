@@ -335,6 +335,7 @@ const Profile = () => {
       <WithdrawDialog open={withdrawOpen} onOpenChange={setWithdrawOpen} balance={profile.balance} onSuccess={refreshProfile} />
       <ReferralDialog open={referralOpen} onOpenChange={setReferralOpen} referralCode={profile.referral_code || ''} />
       <DailyCheckinDialog open={checkinOpen} onOpenChange={setCheckinOpen} onSuccess={refreshProfile} />
+      <SpinWheelDialog open={spinOpen} onOpenChange={setSpinOpen} onSuccess={refreshProfile} />
     </div>
   );
 };
