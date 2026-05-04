@@ -46,6 +46,7 @@ import RechargeDialog from "@/components/RechargeDialog";
 import WithdrawDialog from "@/components/WithdrawDialog";
 import ReferralDialog from "@/components/ReferralDialog";
 import DailyCheckinDialog from "@/components/DailyCheckinDialog";
+import SpinWheelDialog from "@/components/SpinWheelDialog";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -61,6 +62,7 @@ const Profile = () => {
   const [withdrawOpen, setWithdrawOpen] = useState(false);
   const [referralOpen, setReferralOpen] = useState(false);
   const [checkinOpen, setCheckinOpen] = useState(false);
+  const [spinOpen, setSpinOpen] = useState(false);
 
   const openProfileDialog = (mode: "profile" | "password") => {
     setDialogMode(mode);
@@ -93,7 +95,7 @@ const Profile = () => {
     { icon: ClipboardList, label: "Catatan Penerbangan", action: () => navigate("/account") },
     { icon: Trophy, label: "Tantangan", action: () => navigate("/account") },
     { icon: Volume2, label: "Pemberitahuan Pesan", action: () => toast({ title: "Belum ada pesan", description: "Tidak ada pemberitahuan baru" }) },
-    { icon: Gift, label: "Keberuntungan", action: () => setCouponDialogOpen(true) },
+    { icon: Gift, label: "Keberuntungan", action: () => setSpinOpen(true) },
     { icon: CalendarCheck, label: "Check-in", action: () => setCheckinOpen(true) },
   ];
 
@@ -333,6 +335,7 @@ const Profile = () => {
       <WithdrawDialog open={withdrawOpen} onOpenChange={setWithdrawOpen} balance={profile.balance} onSuccess={refreshProfile} />
       <ReferralDialog open={referralOpen} onOpenChange={setReferralOpen} referralCode={profile.referral_code || ''} />
       <DailyCheckinDialog open={checkinOpen} onOpenChange={setCheckinOpen} onSuccess={refreshProfile} />
+      <SpinWheelDialog open={spinOpen} onOpenChange={setSpinOpen} onSuccess={refreshProfile} />
     </div>
   );
 };

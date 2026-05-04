@@ -295,6 +295,39 @@ export type Database = {
         }
         Relationships: []
       }
+      spin_tickets: {
+        Row: {
+          created_at: string
+          id: string
+          is_used: boolean
+          reward_amount: number | null
+          source: string
+          source_user_id: string | null
+          used_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_used?: boolean
+          reward_amount?: number | null
+          source?: string
+          source_user_id?: string | null
+          used_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_used?: boolean
+          reward_amount?: number | null
+          source?: string
+          source_user_id?: string | null
+          used_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       transactions: {
         Row: {
           amount: number

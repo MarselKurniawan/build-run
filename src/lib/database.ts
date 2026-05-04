@@ -265,11 +265,16 @@ export const updateInvestment = async (id: string, updates: Partial<Investment>)
   return true;
 };
 
+// Claim ulang otomatis tiap 24 jam dari last_claimed_at (atau created_at jika belum pernah)
 export const canClaimToday = (lastClaimedAt: string | null): boolean => {
-  if (!lastClaimedAt) return true;
-  const lastClaim = new Date(lastClaimedAt);
-  const now = new Date();
-  return lastClaim.toDateString() !== now.toDateString();
+  return getNextClaimDelayMs(lastClaimedAt) <= 0;
+};
+
+export const getNextClaimDelayMs = (lastClaimedAt: string | null): number => {
+  if (!lastClaimedAt) return 0;
+  const last = new Date(lastClaimedAt).getTime();
+  const next = last + 24 * 60 * 60 * 1000;
+  return next - Date.now();
 };
 
 // Transaction functions
