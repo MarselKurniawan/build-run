@@ -76,12 +76,11 @@ const SpinWheelDialog = ({ open, onOpenChange, onSuccess }: SpinWheelDialogProps
     setResultIdx(null);
 
     const ticket = tickets[0];
-    const weights = [25, 20, 18, 14, 10, 7, 4, 2];
-    const totalW = weights.reduce((a, b) => a + b, 0);
+    const totalW = REWARDS.reduce((a, b) => a + b.weight, 0);
     let r = Math.random() * totalW;
     let idx = 0;
-    for (let i = 0; i < weights.length; i++) {
-      r -= weights[i];
+    for (let i = 0; i < REWARDS.length; i++) {
+      r -= REWARDS[i].weight;
       if (r <= 0) { idx = i; break; }
     }
 
