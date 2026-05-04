@@ -62,6 +62,7 @@ const Profile = () => {
   const [withdrawOpen, setWithdrawOpen] = useState(false);
   const [referralOpen, setReferralOpen] = useState(false);
   const [checkinOpen, setCheckinOpen] = useState(false);
+  const [spinOpen, setSpinOpen] = useState(false);
 
   const openProfileDialog = (mode: "profile" | "password") => {
     setDialogMode(mode);
