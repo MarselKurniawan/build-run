@@ -46,6 +46,7 @@ import RechargeDialog from "@/components/RechargeDialog";
 import WithdrawDialog from "@/components/WithdrawDialog";
 import ReferralDialog from "@/components/ReferralDialog";
 import DailyCheckinDialog from "@/components/DailyCheckinDialog";
+import SpinWheelDialog from "@/components/SpinWheelDialog";
 
 const Profile = () => {
   const navigate = useNavigate();
