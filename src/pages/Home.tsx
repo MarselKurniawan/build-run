@@ -48,6 +48,55 @@ const Home = () => {
     loadData();
   }, [user]);
 
+  // Auto-claim: jalan setiap 60 detik untuk cek investasi yang sudah lewat 24 jam dari pembelian/klaim terakhir
+  useEffect(() => {
+    if (!user || !profile || investments.length === 0) return;
+
+    const runAutoClaim = async () => {
+      const claimable = investments.filter(inv =>
+        inv.status === 'active' && canClaimToday(inv.last_claimed_at || inv.created_at || null)
+      );
+      if (claimable.length === 0) return;
+
+      let total = 0;
+      for (const inv of claimable) {
+        const newEarned = inv.total_earned + inv.daily_income;
+        const newDays = inv.days_remaining - 1;
+        await updateInvestment(inv.id, {
+          total_earned: newEarned,
+          days_remaining: newDays,
+          last_claimed_at: new Date().toISOString(),
+          status: newDays <= 0 ? 'completed' : 'active',
+        });
+        await createTransaction({
+          user_id: user.id,
+          type: 'income',
+          amount: inv.daily_income,
+          status: 'success',
+          description: `Profit otomatis ${inv.product_name}`,
+        });
+        await processReferralRabat(user.id, inv.daily_income);
+        total += inv.daily_income;
+      }
+      if (total > 0) {
+        await updateProfile(user.id, {
+          balance: profile.balance + total,
+          total_income: profile.total_income + total,
+        });
+        await loadData();
+        toast({
+          title: '💰 Profit Otomatis Masuk',
+          description: `+${formatCurrency(total)} dari ${claimable.length} drone`,
+        });
+      }
+    };
+
+    runAutoClaim();
+    const id = setInterval(runAutoClaim, 60_000);
+    return () => clearInterval(id);
+  }, [user, profile, investments]);
+
+
   const handleLogout = async () => {
     await signOut();
     toast({ title: "Logout Berhasil", description: "Sampai jumpa lagi!" });
