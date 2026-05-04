@@ -92,6 +92,7 @@ const Profile = () => {
   ];
 
   const menuPrimary = [
+    { icon: Landmark, label: "Akun Bank", action: () => setBankDialogOpen(true) },
     { icon: ClipboardList, label: "Catatan Penerbangan", action: () => navigate("/account") },
     { icon: Trophy, label: "Tantangan", action: () => navigate("/account") },
     { icon: Volume2, label: "Pemberitahuan Pesan", action: () => toast({ title: "Belum ada pesan", description: "Tidak ada pemberitahuan baru" }) },
