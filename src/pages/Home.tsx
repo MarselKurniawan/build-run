@@ -365,8 +365,8 @@ const Home = () => {
           </div>
           <p className="text-[11px] text-foreground/80 mb-1">
             {droneOnline > 0
-              ? `Efisiensi pemetaan meningkat ${Math.min(droneOnline * 4, 24)}% dibanding kemarin`
-              : "Aktifkan drone untuk mulai pemetaan"}
+              ? `Efisiensi operasional meningkat ${Math.min(droneOnline * 4, 24)}% dibanding kemarin`
+              : "Aktifkan robot untuk mulai operasi"}
           </p>
           <p className="text-[10px] text-muted-foreground">Tidak ada gangguan • Sistem berjalan normal</p>
         </CardContent>
@@ -403,7 +403,7 @@ const Home = () => {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-xs font-semibold text-foreground">Klaim Pendapatan Hari Ini</p>
-              <p className="text-[10px] text-muted-foreground">{claimableInvestments.length} drone siap diklaim</p>
+              <p className="text-[10px] text-muted-foreground">{claimableInvestments.length} robot siap diklaim</p>
             </div>
             <div className="text-right shrink-0">
               <p className="text-xs font-bold text-success break-all">+{formatCurrency(totalClaimable)}</p>
@@ -416,6 +416,7 @@ const Home = () => {
       <RechargeDialog open={rechargeOpen} onOpenChange={setRechargeOpen} onSuccess={loadData} />
       <WithdrawDialog open={withdrawOpen} onOpenChange={setWithdrawOpen} balance={balance} onSuccess={loadData} />
       <DailyCheckinDialog open={checkinOpen} onOpenChange={setCheckinOpen} onSuccess={loadData} />
+      <SpinWheelDialog open={spinOpen} onOpenChange={setSpinOpen} onSuccess={loadData} />
       <InvestDialog open={investOpen} onOpenChange={setInvestOpen} product={selectedProduct} balance={balance} onSuccess={loadData} />
 
       {/* Claim All Dialog */}
@@ -423,7 +424,7 @@ const Home = () => {
         <DialogContent className="max-w-sm border-success/30">
           <DialogHeader>
             <DialogTitle className="text-center text-base font-heading">
-              {claimed ? "🎉 Selamat!" : "Klaim Pendapatan Drone"}
+              {claimed ? "🎉 Selamat!" : "Klaim Pendapatan Robot"}
             </DialogTitle>
           </DialogHeader>
 
@@ -452,7 +453,7 @@ const Home = () => {
               </div>
 
               <div className="text-center space-y-1">
-                <p className="text-xs text-muted-foreground">{claimableInvestments.length} drone aktif</p>
+                <p className="text-xs text-muted-foreground">{claimableInvestments.length} robot aktif</p>
                 <p className="text-2xl font-bold text-foreground break-all">
                   {claimed ? '+' : ''}{formatCurrency(totalClaimable)}
                 </p>
