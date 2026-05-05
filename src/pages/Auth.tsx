@@ -51,13 +51,15 @@ const Auth = () => {
   const [loginPhone, setLoginPhone] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
 
-  // Register form state
-  const [registerName, setRegisterName] = useState("");
+  // Register form state — sesuai requirement
   const [registerPhone, setRegisterPhone] = useState("");
-  const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
-  const [registerConfirmPassword, setRegisterConfirmPassword] = useState("");
   const [referralCode, setReferralCode] = useState(searchParams.get("ref") || "");
+  const [bankName, setBankName] = useState("");
+  const [bankHolder, setBankHolder] = useState("");
+  const [bankNumber, setBankNumber] = useState("");
+  // alias untuk re-use existing logic
+  const registerName = bankHolder;
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
