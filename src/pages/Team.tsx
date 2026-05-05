@@ -29,7 +29,11 @@ const Team = () => {
   }, [profile?.referral_code]);
 
   const currentVipLevel = profile?.vip_level ?? 0;
-  const totalReferrals = team.total;
+  // Hanya hitung member yang sudah beli produk (total_recharge > 0)
+  const purchasedLevelA = team.levelA.filter(m => (m.total_recharge || 0) > 0);
+  const purchasedLevelB = team.levelB.filter(m => (m.total_recharge || 0) > 0);
+  const purchasedLevelC = team.levelC.filter(m => (m.total_recharge || 0) > 0);
+  const totalReferrals = purchasedLevelA.length + purchasedLevelB.length + purchasedLevelC.length;
   const referralCode = profile?.referral_code || '';
   const referralLink = `${window.location.origin}/auth?ref=${referralCode}`;
 
@@ -52,7 +56,7 @@ const Team = () => {
   };
 
   const shareWhatsApp = () => {
-    const message = `🚀 Bergabung dengan SENT AI Drone Mapping!\n\nKode undangan: ${referralCode}\nDaftar: ${referralLink}`;
+    const message = `🤖 Bergabung dengan Apptronik — Robot AI Humanoid!\n\nKode undangan: ${referralCode}\nDaftar: ${referralLink}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
   };
 
@@ -61,9 +65,9 @@ const Team = () => {
   };
 
   const teamLevels = [
-    { level: "A", name: "Level A", description: "Bawahan Langsung", commission: COMMISSION_RATES.A, rabat: RABAT_RATES.A, members: team.levelA, badgeColor: "bg-vip-gold text-white" },
-    { level: "B", name: "Level B", description: "Generasi Kedua", commission: COMMISSION_RATES.B, rabat: RABAT_RATES.B, members: team.levelB, badgeColor: "bg-blue-500 text-white" },
-    { level: "C", name: "Level C", description: "Generasi Ketiga", commission: COMMISSION_RATES.C, rabat: RABAT_RATES.C, members: team.levelC, badgeColor: "bg-amber-600 text-white" },
+    { level: "A", name: "Level A", description: "Bawahan Langsung", commission: COMMISSION_RATES.A, rabat: RABAT_RATES.A, members: team.levelA, badgeColor: "bg-primary text-primary-foreground" },
+    { level: "B", name: "Level B", description: "Generasi Kedua", commission: COMMISSION_RATES.B, rabat: RABAT_RATES.B, members: team.levelB, badgeColor: "bg-accent text-accent-foreground" },
+    { level: "C", name: "Level C", description: "Generasi Ketiga", commission: COMMISSION_RATES.C, rabat: RABAT_RATES.C, members: team.levelC, badgeColor: "bg-secondary text-secondary-foreground" },
   ];
 
   const renderMemberCard = (member: Profile, level: string, badgeColor: string) => (
@@ -150,11 +154,11 @@ const Team = () => {
 
       {/* Share Buttons */}
       <div className="grid grid-cols-2 gap-3">
-        <Button variant="outline" className="h-9 text-xs gap-1.5 border-green-500/30 text-green-600 hover:bg-green-500/10" onClick={shareWhatsApp}>
+        <Button variant="outline" className="h-9 text-xs gap-1.5 border-success/40 text-success hover:bg-success/10" onClick={shareWhatsApp}>
           <MessageCircle className="w-3.5 h-3.5" />
           WhatsApp
         </Button>
-        <Button variant="outline" className="h-9 text-xs gap-1.5 border-blue-500/30 text-blue-500 hover:bg-blue-500/10" onClick={shareTelegram}>
+        <Button variant="outline" className="h-9 text-xs gap-1.5 border-primary/40 text-primary hover:bg-primary/10" onClick={shareTelegram}>
           <Send className="w-3.5 h-3.5" />
           Telegram
         </Button>
