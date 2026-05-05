@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plane, Radio, ShieldCheck, Sun, Moon, LogOut, Sparkles, Gift, PartyPopper, Coins, ChevronRight, Trophy, Repeat, Zap, Bell, CalendarCheck } from "lucide-react";
+import { Plane, Radio, ShieldCheck, Sun, Moon, LogOut, Sparkles, Gift, PartyPopper, Coins, ChevronRight, Trophy, Repeat, Zap, Bell, CalendarCheck, Share2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
@@ -12,7 +12,11 @@ import RechargeDialog from "@/components/RechargeDialog";
 import WithdrawDialog from "@/components/WithdrawDialog";
 import InvestDialog from "@/components/InvestDialog";
 import DailyCheckinDialog from "@/components/DailyCheckinDialog";
+import SpinWheelDialog from "@/components/SpinWheelDialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import apptronik1 from "@/assets/apptronik-1.jpeg";
+import apptronik2 from "@/assets/apptronik-2.jpeg";
+import apptronik3 from "@/assets/apptronik-3.jpeg";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -31,6 +35,14 @@ const Home = () => {
   const [claimed, setClaimed] = useState(false);
   const [isClaiming, setIsClaiming] = useState(false);
   const [checkinOpen, setCheckinOpen] = useState(false);
+  const [spinOpen, setSpinOpen] = useState(false);
+  const [slideIndex, setSlideIndex] = useState(0);
+  const slides = [apptronik1, apptronik2, apptronik3];
+
+  useEffect(() => {
+    const id = setInterval(() => setSlideIndex(i => (i + 1) % 3), 4000);
+    return () => clearInterval(id);
+  }, []);
 
   const loadData = async () => {
     if (user) {
