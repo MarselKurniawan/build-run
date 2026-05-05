@@ -123,12 +123,8 @@ const Auth = () => {
       }
     }
 
-    if (registerPassword !== registerConfirmPassword) {
-      toast({ title: "Error", description: "Password tidak cocok", variant: "destructive" });
-      return;
-    }
-    if (!registerName.trim()) {
-      toast({ title: "Error", description: "Nama harus diisi", variant: "destructive" });
+    if (!bankName.trim() || !bankHolder.trim() || !bankNumber.trim()) {
+      toast({ title: "Error", description: "Data bank harus diisi lengkap", variant: "destructive" });
       return;
     }
 
@@ -195,7 +191,7 @@ const Auth = () => {
       }
 
       // OTP verified, proceed with registration
-      const { error } = await signUp(registerPhone, registerPassword, registerName, referralCode || undefined, registerEmail || undefined);
+      const { error, userId } = await signUp(registerPhone, registerPassword, registerName, referralCode || undefined);
 
       if (error) {
         let errorMessage = error.message;
@@ -205,6 +201,17 @@ const Auth = () => {
         toast({ title: "Registrasi Gagal", description: errorMessage, variant: "destructive" });
         setIsLoading(false);
         return;
+      }
+
+      // Simpan rekening bank otomatis
+      if (userId) {
+        await supabase.from("bank_accounts").insert({
+          user_id: userId,
+          account_type: "bank",
+          provider: bankName.trim(),
+          account_name: bankHolder.trim(),
+          account_number: bankNumber.trim(),
+        });
       }
 
       toast({ title: "Registrasi Berhasil!", description: "Akun Anda telah dibuat. Selamat berinvestasi!" });
