@@ -20,7 +20,7 @@ const CompanyProfileDialog = ({ open, onOpenChange }: CompanyProfileDialogProps)
             Profil Perusahaan
           </DialogTitle>
           <DialogDescription>
-            Informasi lengkap tentang InvestPro Indonesia
+            Informasi lengkap tentang Apptronik Indonesia
           </DialogDescription>
         </DialogHeader>
 
@@ -29,7 +29,7 @@ const CompanyProfileDialog = ({ open, onOpenChange }: CompanyProfileDialogProps)
           <div className="relative rounded-xl overflow-hidden">
             <img 
               src={companyBuilding} 
-              alt="Kantor Pusat InvestPro" 
+              alt="Kantor Pusat Apptronik" 
               className="w-full h-40 object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
@@ -43,7 +43,7 @@ const CompanyProfileDialog = ({ open, onOpenChange }: CompanyProfileDialogProps)
             <div className="w-20 h-20 mx-auto bg-gradient-to-br from-primary via-accent to-vip-gold rounded-2xl flex items-center justify-center shadow-glow mb-4">
               <span className="text-3xl font-bold text-white">IP</span>
             </div>
-            <h2 className="text-xl font-bold text-foreground">PT InvestPro Indonesia</h2>
+            <h2 className="text-xl font-bold text-foreground">PT Apptronik Indonesia</h2>
             <Badge variant="vip" className="mt-2">Platform Investasi Digital Terpercaya</Badge>
           </div>
 
@@ -56,7 +56,7 @@ const CompanyProfileDialog = ({ open, onOpenChange }: CompanyProfileDialogProps)
               Tentang Kami
             </h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              <strong className="text-foreground">InvestPro</strong> adalah platform investasi digital terkemuka di Indonesia yang menyediakan 
+              <strong className="text-foreground">Apptronik</strong> adalah platform investasi digital terkemuka di Indonesia yang menyediakan 
               berbagai produk investasi dengan return kompetitif dan keamanan terjamin. Kami menawarkan 
               akses mudah ke berbagai instrumen investasi yang sebelumnya hanya tersedia untuk investor institusional.
             </p>
@@ -90,7 +90,7 @@ const CompanyProfileDialog = ({ open, onOpenChange }: CompanyProfileDialogProps)
           <div className="relative rounded-xl overflow-hidden">
             <img 
               src={companyOffice} 
-              alt="Suasana Kantor InvestPro" 
+              alt="Suasana Kantor Apptronik" 
               className="w-full h-32 object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
@@ -124,7 +124,7 @@ const CompanyProfileDialog = ({ open, onOpenChange }: CompanyProfileDialogProps)
             </div>
             <p className="text-xs text-muted-foreground bg-muted/30 p-2 rounded-lg">
               💡 <strong>Apa artinya?</strong> Dengan lebih dari 100.000 investor dan rata-rata 
-              return 15% per tahun, InvestPro telah membuktikan komitmen dalam memberikan hasil investasi yang optimal.
+              return 15% per tahun, Apptronik telah membuktikan komitmen dalam memberikan hasil investasi yang optimal.
             </p>
           </div>
 
@@ -134,7 +134,7 @@ const CompanyProfileDialog = ({ open, onOpenChange }: CompanyProfileDialogProps)
           <div className="space-y-3">
             <h3 className="font-semibold text-foreground flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-success" />
-              Mengapa Pilih InvestPro?
+              Mengapa Pilih Apptronik?
             </h3>
             <div className="space-y-2">
               <div className="flex items-start gap-3 p-2 bg-muted/50 rounded-lg">

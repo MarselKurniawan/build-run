@@ -8,17 +8,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Eye, EyeOff, TrendingUp, Shield, Users, Sparkles, Zap, Phone, Mail, Loader2 } from "lucide-react";
+import { Eye, EyeOff, TrendingUp, Shield, Users, Sparkles, Zap, Phone, Mail, Loader2, Landmark } from "lucide-react";
 import { z } from "zod";
 import ForgotPasswordFlow from "@/components/ForgotPasswordFlow";
 
 // DEV MODE: skip OTP sementara (UI OTP tetep ada tapi auto-pass).
-// Set ke false untuk aktifin verifikasi OTP normal.
 const DEV_SKIP_OTP = true;
 
 const phoneSchema = z.string().min(10, "Nomor WhatsApp minimal 10 digit").regex(/^[0-9+]+$/, "Format nomor tidak valid");
-const passwordSchema = z.string().min(6, "Password minimal 6 karakter");
-const emailSchema = z.string().email("Format email tidak valid").optional().or(z.literal(""));
+const passwordSchema = z.string().min(6, "Kata sandi minimal 6 karakter");
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -53,13 +51,15 @@ const Auth = () => {
   const [loginPhone, setLoginPhone] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
 
-  // Register form state
-  const [registerName, setRegisterName] = useState("");
+  // Register form state — sesuai requirement
   const [registerPhone, setRegisterPhone] = useState("");
-  const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
-  const [registerConfirmPassword, setRegisterConfirmPassword] = useState("");
   const [referralCode, setReferralCode] = useState(searchParams.get("ref") || "");
+  const [bankName, setBankName] = useState("");
+  const [bankHolder, setBankHolder] = useState("");
+  const [bankNumber, setBankNumber] = useState("");
+  // alias untuk re-use existing logic
+  const registerName = bankHolder;
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -116,7 +116,6 @@ const Auth = () => {
     try {
       phoneSchema.parse(registerPhone);
       passwordSchema.parse(registerPassword);
-      if (registerEmail) emailSchema.parse(registerEmail);
     } catch (error) {
       if (error instanceof z.ZodError) {
         toast({ title: "Error", description: error.errors[0].message, variant: "destructive" });
@@ -124,12 +123,8 @@ const Auth = () => {
       }
     }
 
-    if (registerPassword !== registerConfirmPassword) {
-      toast({ title: "Error", description: "Password tidak cocok", variant: "destructive" });
-      return;
-    }
-    if (!registerName.trim()) {
-      toast({ title: "Error", description: "Nama harus diisi", variant: "destructive" });
+    if (!bankName.trim() || !bankHolder.trim() || !bankNumber.trim()) {
+      toast({ title: "Error", description: "Data bank harus diisi lengkap", variant: "destructive" });
       return;
     }
 
@@ -196,7 +191,7 @@ const Auth = () => {
       }
 
       // OTP verified, proceed with registration
-      const { error } = await signUp(registerPhone, registerPassword, registerName, referralCode || undefined, registerEmail || undefined);
+      const { error, userId } = await signUp(registerPhone, registerPassword, registerName, referralCode || undefined);
 
       if (error) {
         let errorMessage = error.message;
@@ -206,6 +201,17 @@ const Auth = () => {
         toast({ title: "Registrasi Gagal", description: errorMessage, variant: "destructive" });
         setIsLoading(false);
         return;
+      }
+
+      // Simpan rekening bank otomatis
+      if (userId) {
+        await supabase.from("bank_accounts").insert({
+          user_id: userId,
+          account_type: "bank",
+          provider: bankName.trim(),
+          account_name: bankHolder.trim(),
+          account_number: bankNumber.trim(),
+        });
       }
 
       toast({ title: "Registrasi Berhasil!", description: "Akun Anda telah dibuat. Selamat berinvestasi!" });
@@ -375,19 +381,11 @@ const Auth = () => {
                   {otpStep === 'form' ? (
                     <div className="space-y-4">
                       <div className="space-y-2">
-                        <Label htmlFor="register-name">Nama Lengkap</Label>
-                        <Input id="register-name" type="text" placeholder="Masukkan nama lengkap" value={registerName} onChange={(e) => setRegisterName(e.target.value)} required className="bg-muted/50" />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="register-phone" className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" />Nomor WhatsApp</Label>
+                        <Label htmlFor="register-phone" className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" />Nomor Telepon</Label>
                         <Input id="register-phone" type="tel" placeholder="08123456789" value={registerPhone} onChange={(e) => setRegisterPhone(e.target.value)} required className="bg-muted/50" />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="register-email" className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5" />Email <span className="text-muted-foreground text-xs">(Opsional)</span></Label>
-                        <Input id="register-email" type="email" placeholder="nama@email.com" value={registerEmail} onChange={(e) => setRegisterEmail(e.target.value)} className="bg-muted/50" />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="register-password">Password</Label>
+                        <Label htmlFor="register-password">Kata Sandi</Label>
                         <div className="relative">
                           <Input id="register-password" type={showPassword ? "text" : "password"} placeholder="Minimal 6 karakter" value={registerPassword} onChange={(e) => setRegisterPassword(e.target.value)} required minLength={6} className="bg-muted/50" />
                           <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
@@ -396,12 +394,20 @@ const Auth = () => {
                         </div>
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="register-confirm-password">Konfirmasi Password</Label>
-                        <Input id="register-confirm-password" type="password" placeholder="Ulangi password" value={registerConfirmPassword} onChange={(e) => setRegisterConfirmPassword(e.target.value)} required className="bg-muted/50" />
+                        <Label htmlFor="referral-code">Kode Undangan</Label>
+                        <Input id="referral-code" type="text" placeholder="Masukkan kode undangan" value={referralCode} onChange={(e) => setReferralCode(e.target.value.toUpperCase())} required className="bg-muted/50" />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="referral-code">Kode Referral <span className="text-muted-foreground">(Opsional)</span></Label>
-                        <Input id="referral-code" type="text" placeholder="Masukkan kode referral" value={referralCode} onChange={(e) => setReferralCode(e.target.value.toUpperCase())} className="bg-muted/50" />
+                        <Label htmlFor="bank-name" className="flex items-center gap-1.5"><Landmark className="w-3.5 h-3.5" />Nama Bank</Label>
+                        <Input id="bank-name" type="text" placeholder="Contoh: BCA / Mandiri / BRI" value={bankName} onChange={(e) => setBankName(e.target.value)} required className="bg-muted/50" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="bank-holder">Pemegang Rekening Bank</Label>
+                        <Input id="bank-holder" type="text" placeholder="Nama sesuai rekening" value={bankHolder} onChange={(e) => setBankHolder(e.target.value)} required className="bg-muted/50" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="bank-number">Nomor Rekening Bank</Label>
+                        <Input id="bank-number" type="text" inputMode="numeric" placeholder="Nomor rekening" value={bankNumber} onChange={(e) => setBankNumber(e.target.value.replace(/[^0-9]/g, ''))} required className="bg-muted/50" />
                       </div>
                       <Button type="button" className="w-full" size="lg" disabled={otpSending} onClick={handleSendOtp}>
                         {otpSending ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Mengirim OTP...</> : "Kirim Kode Verifikasi"}

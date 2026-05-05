@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plane, Radio, ShieldCheck, Sun, Moon, LogOut, Sparkles, Gift, PartyPopper, Coins, ChevronRight, Trophy, Repeat, Zap, Bell, CalendarCheck } from "lucide-react";
+import { Plane, Radio, ShieldCheck, Sun, Moon, LogOut, Sparkles, Gift, PartyPopper, Coins, ChevronRight, Trophy, Repeat, Zap, Bell, CalendarCheck, Share2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
@@ -12,7 +12,11 @@ import RechargeDialog from "@/components/RechargeDialog";
 import WithdrawDialog from "@/components/WithdrawDialog";
 import InvestDialog from "@/components/InvestDialog";
 import DailyCheckinDialog from "@/components/DailyCheckinDialog";
+import SpinWheelDialog from "@/components/SpinWheelDialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import apptronik1 from "@/assets/apptronik-1.jpeg";
+import apptronik2 from "@/assets/apptronik-2.jpeg";
+import apptronik3 from "@/assets/apptronik-3.jpeg";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -31,6 +35,14 @@ const Home = () => {
   const [claimed, setClaimed] = useState(false);
   const [isClaiming, setIsClaiming] = useState(false);
   const [checkinOpen, setCheckinOpen] = useState(false);
+  const [spinOpen, setSpinOpen] = useState(false);
+  const [slideIndex, setSlideIndex] = useState(0);
+  const slides = [apptronik1, apptronik2, apptronik3];
+
+  useEffect(() => {
+    const id = setInterval(() => setSlideIndex(i => (i + 1) % 3), 4000);
+    return () => clearInterval(id);
+  }, []);
 
   const loadData = async () => {
     if (user) {
@@ -192,16 +204,16 @@ const Home = () => {
 
         <div className="flex items-start justify-between relative z-10">
           <div className="min-w-0">
-            <p className="text-[10px] font-semibold tracking-[0.2em] text-primary-glow mb-1">SENT AI</p>
-            <h1 className="text-xl font-heading font-bold text-white leading-tight">Drone Mapping</h1>
-            <p className="text-[10px] text-white/60 mt-0.5">Didukung teknologi kecerdasan buatan</p>
+            <p className="text-[10px] font-semibold tracking-[0.2em] text-primary-glow mb-1">APPTRONIK</p>
+            <h1 className="text-xl font-heading font-bold text-white leading-tight">Robot AI Humanoid</h1>
+            <p className="text-[10px] text-white/60 mt-0.5">Investasi cerdas pada masa depan otomasi</p>
           </div>
           <div className="flex items-center gap-1 shrink-0">
             <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-8 w-8 text-white/70 hover:text-white hover:bg-white/10">
               {theme === "light" ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
             </Button>
             {isAdmin && (
-              <Button variant="ghost" size="icon" onClick={() => navigate("/admin")} className="h-8 w-8 text-primary-glow hover:bg-white/10">
+              <Button variant="ghost" size="icon" onClick={() => navigate("/admin")} className="h-8 w-8 bg-primary-glow/30 text-white hover:bg-primary-glow/50 border border-primary-glow/40">
                 <ShieldCheck className="w-4 h-4" />
               </Button>
             )}
@@ -218,37 +230,41 @@ const Home = () => {
           <div className="flex items-center gap-2">
             <span className={`w-2 h-2 rounded-full ${droneOnline > 0 ? 'bg-success' : 'bg-success/60'}`} />
             <span className="text-[11px] text-white/85">
-              {droneOnline > 0 ? `${droneOnline} drone aktif` : "Tidak ada drone aktif"}
+              {droneOnline > 0 ? `${droneOnline} robot aktif` : "Tidak ada robot aktif"}
             </span>
           </div>
-          <span className="text-[11px] text-white/70">{droneOnline} Drone Online</span>
+          <span className="text-[11px] text-white/70">{droneOnline} Robot Online</span>
         </div>
       </div>
 
-      {/* Aksi cepat */}
       <div>
         <div className="flex items-center justify-between mb-2">
           <p className="text-xs font-medium text-foreground">Aksi cepat</p>
           <Link to="/account" className="text-[11px] text-primary flex items-center gap-0.5">
-            Periksa drone saya <ChevronRight className="w-3 h-3" />
+            Periksa robot saya <ChevronRight className="w-3 h-3" />
           </Link>
         </div>
-        <div className="grid grid-cols-2 gap-2.5">
-          <Button
-            className="h-11 text-xs font-semibold rounded-xl bg-primary/90 hover:bg-primary"
-            onClick={handleOpenClaimDialog}
-            disabled={claimableInvestments.length === 0}
-          >
-            <Zap className="w-3.5 h-3.5 mr-1.5" />
-            Mulai Misi
-          </Button>
-          <Button
-            variant="secondary"
-            className="h-11 text-xs font-semibold rounded-xl bg-secondary/80 hover:bg-secondary"
-            onClick={() => navigate("/product")}
-          >
-            Sewa drone
-          </Button>
+        <div className="relative rounded-xl overflow-hidden h-36 bg-card/60 border border-border/50">
+          {slides.map((src, i) => (
+            <img
+              key={i}
+              src={src}
+              alt={`Apptronik humanoid ${i + 1}`}
+              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${i === slideIndex ? 'opacity-100' : 'opacity-0'}`}
+              loading="lazy"
+            />
+          ))}
+          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-2.5 flex items-end justify-between">
+            <div>
+              <p className="text-[10px] tracking-[0.2em] text-white/70">APPTRONIK</p>
+              <p className="text-xs font-semibold text-white">Robot AI Humanoid</p>
+            </div>
+            <div className="flex gap-1">
+              {slides.map((_, i) => (
+                <span key={i} className={`w-1.5 h-1.5 rounded-full ${i === slideIndex ? 'bg-white' : 'bg-white/40'}`} />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -256,7 +272,7 @@ const Home = () => {
       <div className="flex items-center gap-2 rounded-xl bg-card/70 border border-border/50 px-3 py-2 overflow-hidden">
         <Radio className="w-3.5 h-3.5 text-primary shrink-0" />
         <p className="text-[10px] text-muted-foreground truncate">
-          Selesaikan misi harian untuk mendapatkan keberuntungan ekstra. Pertahankan drone aktif setiap hari.
+          Selesaikan misi harian untuk mendapatkan keberuntungan ekstra. Pertahankan robot aktif setiap hari.
         </p>
       </div>
 
@@ -269,12 +285,12 @@ const Home = () => {
                 <Plane className="w-4 h-4 text-primary" />
               </div>
               <div>
-                <p className="text-xs font-semibold text-foreground">Progress Penerbangan</p>
-                <p className="text-[10px] text-muted-foreground">Terbang setiap hari untuk hadiah</p>
+                <p className="text-xs font-semibold text-foreground">Progress Operasional</p>
+                <p className="text-[10px] text-muted-foreground">Aktifkan robot setiap hari untuk hadiah</p>
               </div>
             </div>
             <Badge variant="outline" className="text-[10px] px-2 py-0 border-primary/40 text-primary">
-              Level drone: VIP {vipLevel}
+              Level robot: VIP {vipLevel}
             </Badge>
           </div>
 
@@ -292,7 +308,7 @@ const Home = () => {
 
           <div className="flex items-center justify-between">
             <p className="text-[10px] text-muted-foreground">
-              {droneOnline > 0 ? `Anda sudah aktif bersama kami ${droneOnline} drone` : 'Belum ada drone aktif hari ini'}
+              {droneOnline > 0 ? `Anda sudah aktif bersama ${droneOnline} robot` : 'Belum ada robot aktif hari ini'}
             </p>
             <Button
               size="sm"
@@ -311,16 +327,16 @@ const Home = () => {
         <p className="text-xs font-medium text-foreground mb-2">Eksklusif untuk Anda</p>
         <div className="grid grid-cols-3 gap-2">
           <button
-            onClick={() => navigate("/account")}
+            onClick={() => navigate("/team")}
             className="rounded-xl bg-card/80 border border-border/50 hover:border-primary/40 p-3 text-left transition-colors"
           >
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary/30 to-accent/20 flex items-center justify-center mb-2">
-              <Trophy className="w-5 h-5 text-primary-glow" />
+              <Share2 className="w-5 h-5 text-primary-glow" />
             </div>
-            <p className="text-[11px] font-semibold text-foreground">Tantangan</p>
+            <p className="text-[11px] font-semibold text-foreground">Undangan</p>
           </button>
           <button
-            onClick={() => navigate("/team")}
+            onClick={() => navigate("/account")}
             className="rounded-xl bg-card/80 border border-border/50 hover:border-primary/40 p-3 text-left transition-colors"
           >
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-accent/30 to-primary/20 flex items-center justify-center mb-2">
@@ -329,13 +345,13 @@ const Home = () => {
             <p className="text-[11px] font-semibold text-foreground">Menukarkan</p>
           </button>
           <button
-            onClick={() => setCheckinOpen(true)}
+            onClick={() => setSpinOpen(true)}
             className="rounded-xl bg-card/80 border border-border/50 hover:border-primary/40 p-3 text-left transition-colors"
           >
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-vip-gold/30 to-primary/20 flex items-center justify-center mb-2">
               <Gift className="w-5 h-5 text-vip-gold" />
             </div>
-            <p className="text-[11px] font-semibold text-foreground">Keberuntungan</p>
+            <p className="text-[11px] font-semibold text-foreground">Roda Putar</p>
           </button>
         </div>
       </div>
@@ -349,8 +365,8 @@ const Home = () => {
           </div>
           <p className="text-[11px] text-foreground/80 mb-1">
             {droneOnline > 0
-              ? `Efisiensi pemetaan meningkat ${Math.min(droneOnline * 4, 24)}% dibanding kemarin`
-              : "Aktifkan drone untuk mulai pemetaan"}
+              ? `Efisiensi operasional meningkat ${Math.min(droneOnline * 4, 24)}% dibanding kemarin`
+              : "Aktifkan robot untuk mulai operasi"}
           </p>
           <p className="text-[10px] text-muted-foreground">Tidak ada gangguan • Sistem berjalan normal</p>
         </CardContent>
@@ -387,7 +403,7 @@ const Home = () => {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-xs font-semibold text-foreground">Klaim Pendapatan Hari Ini</p>
-              <p className="text-[10px] text-muted-foreground">{claimableInvestments.length} drone siap diklaim</p>
+              <p className="text-[10px] text-muted-foreground">{claimableInvestments.length} robot siap diklaim</p>
             </div>
             <div className="text-right shrink-0">
               <p className="text-xs font-bold text-success break-all">+{formatCurrency(totalClaimable)}</p>
@@ -400,6 +416,7 @@ const Home = () => {
       <RechargeDialog open={rechargeOpen} onOpenChange={setRechargeOpen} onSuccess={loadData} />
       <WithdrawDialog open={withdrawOpen} onOpenChange={setWithdrawOpen} balance={balance} onSuccess={loadData} />
       <DailyCheckinDialog open={checkinOpen} onOpenChange={setCheckinOpen} onSuccess={loadData} />
+      <SpinWheelDialog open={spinOpen} onOpenChange={setSpinOpen} onSuccess={loadData} />
       <InvestDialog open={investOpen} onOpenChange={setInvestOpen} product={selectedProduct} balance={balance} onSuccess={loadData} />
 
       {/* Claim All Dialog */}
@@ -407,7 +424,7 @@ const Home = () => {
         <DialogContent className="max-w-sm border-success/30">
           <DialogHeader>
             <DialogTitle className="text-center text-base font-heading">
-              {claimed ? "🎉 Selamat!" : "Klaim Pendapatan Drone"}
+              {claimed ? "🎉 Selamat!" : "Klaim Pendapatan Robot"}
             </DialogTitle>
           </DialogHeader>
 
@@ -436,7 +453,7 @@ const Home = () => {
               </div>
 
               <div className="text-center space-y-1">
-                <p className="text-xs text-muted-foreground">{claimableInvestments.length} drone aktif</p>
+                <p className="text-xs text-muted-foreground">{claimableInvestments.length} robot aktif</p>
                 <p className="text-2xl font-bold text-foreground break-all">
                   {claimed ? '+' : ''}{formatCurrency(totalClaimable)}
                 </p>
