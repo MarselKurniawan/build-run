@@ -8,17 +8,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Eye, EyeOff, TrendingUp, Shield, Users, Sparkles, Zap, Phone, Mail, Loader2 } from "lucide-react";
+import { Eye, EyeOff, TrendingUp, Shield, Users, Sparkles, Zap, Phone, Mail, Loader2, Landmark } from "lucide-react";
 import { z } from "zod";
 import ForgotPasswordFlow from "@/components/ForgotPasswordFlow";
 
 // DEV MODE: skip OTP sementara (UI OTP tetep ada tapi auto-pass).
-// Set ke false untuk aktifin verifikasi OTP normal.
 const DEV_SKIP_OTP = true;
 
 const phoneSchema = z.string().min(10, "Nomor WhatsApp minimal 10 digit").regex(/^[0-9+]+$/, "Format nomor tidak valid");
-const passwordSchema = z.string().min(6, "Password minimal 6 karakter");
-const emailSchema = z.string().email("Format email tidak valid").optional().or(z.literal(""));
+const passwordSchema = z.string().min(6, "Kata sandi minimal 6 karakter");
 
 const Auth = () => {
   const navigate = useNavigate();
