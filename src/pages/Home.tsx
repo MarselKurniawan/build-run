@@ -272,7 +272,7 @@ const Home = () => {
       <div className="flex items-center gap-2 rounded-xl bg-card/70 border border-border/50 px-3 py-2 overflow-hidden">
         <Radio className="w-3.5 h-3.5 text-primary shrink-0" />
         <p className="text-[10px] text-muted-foreground truncate">
-          Selesaikan misi harian untuk mendapatkan keberuntungan ekstra. Pertahankan drone aktif setiap hari.
+          Selesaikan misi harian untuk mendapatkan keberuntungan ekstra. Pertahankan robot aktif setiap hari.
         </p>
       </div>
 
@@ -285,12 +285,12 @@ const Home = () => {
                 <Plane className="w-4 h-4 text-primary" />
               </div>
               <div>
-                <p className="text-xs font-semibold text-foreground">Progress Penerbangan</p>
-                <p className="text-[10px] text-muted-foreground">Terbang setiap hari untuk hadiah</p>
+                <p className="text-xs font-semibold text-foreground">Progress Operasional</p>
+                <p className="text-[10px] text-muted-foreground">Aktifkan robot setiap hari untuk hadiah</p>
               </div>
             </div>
             <Badge variant="outline" className="text-[10px] px-2 py-0 border-primary/40 text-primary">
-              Level drone: VIP {vipLevel}
+              Level robot: VIP {vipLevel}
             </Badge>
           </div>
 
@@ -308,7 +308,7 @@ const Home = () => {
 
           <div className="flex items-center justify-between">
             <p className="text-[10px] text-muted-foreground">
-              {droneOnline > 0 ? `Anda sudah aktif bersama kami ${droneOnline} drone` : 'Belum ada drone aktif hari ini'}
+              {droneOnline > 0 ? `Anda sudah aktif bersama ${droneOnline} robot` : 'Belum ada robot aktif hari ini'}
             </p>
             <Button
               size="sm"
@@ -327,16 +327,16 @@ const Home = () => {
         <p className="text-xs font-medium text-foreground mb-2">Eksklusif untuk Anda</p>
         <div className="grid grid-cols-3 gap-2">
           <button
-            onClick={() => navigate("/account")}
+            onClick={() => navigate("/team")}
             className="rounded-xl bg-card/80 border border-border/50 hover:border-primary/40 p-3 text-left transition-colors"
           >
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary/30 to-accent/20 flex items-center justify-center mb-2">
-              <Trophy className="w-5 h-5 text-primary-glow" />
+              <Share2 className="w-5 h-5 text-primary-glow" />
             </div>
-            <p className="text-[11px] font-semibold text-foreground">Tantangan</p>
+            <p className="text-[11px] font-semibold text-foreground">Undangan</p>
           </button>
           <button
-            onClick={() => navigate("/team")}
+            onClick={() => navigate("/account")}
             className="rounded-xl bg-card/80 border border-border/50 hover:border-primary/40 p-3 text-left transition-colors"
           >
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-accent/30 to-primary/20 flex items-center justify-center mb-2">
@@ -345,13 +345,13 @@ const Home = () => {
             <p className="text-[11px] font-semibold text-foreground">Menukarkan</p>
           </button>
           <button
-            onClick={() => setCheckinOpen(true)}
+            onClick={() => setSpinOpen(true)}
             className="rounded-xl bg-card/80 border border-border/50 hover:border-primary/40 p-3 text-left transition-colors"
           >
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-vip-gold/30 to-primary/20 flex items-center justify-center mb-2">
               <Gift className="w-5 h-5 text-vip-gold" />
             </div>
-            <p className="text-[11px] font-semibold text-foreground">Keberuntungan</p>
+            <p className="text-[11px] font-semibold text-foreground">Roda Putar</p>
           </button>
         </div>
       </div>
