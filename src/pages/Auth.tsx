@@ -114,7 +114,6 @@ const Auth = () => {
     try {
       phoneSchema.parse(registerPhone);
       passwordSchema.parse(registerPassword);
-      if (registerEmail) emailSchema.parse(registerEmail);
     } catch (error) {
       if (error instanceof z.ZodError) {
         toast({ title: "Error", description: error.errors[0].message, variant: "destructive" });
