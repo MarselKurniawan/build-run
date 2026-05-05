@@ -237,16 +237,6 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Aksi cepat */}
-      <div>
-        <div className="flex items-center justify-between mb-2">
-          <p className="text-xs font-medium text-foreground">Aksi cepat</p>
-          <Link to="/account" className="text-[11px] text-primary flex items-center gap-0.5">
-            Periksa drone saya <ChevronRight className="w-3 h-3" />
-          </Link>
-        </div>
-        <div className="grid grid-cols-2 gap-2.5">
-      {/* Aksi cepat — slide foto Apptronik */}
       <div>
         <div className="flex items-center justify-between mb-2">
           <p className="text-xs font-medium text-foreground">Aksi cepat</p>
