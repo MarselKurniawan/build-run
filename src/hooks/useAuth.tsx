@@ -26,7 +26,7 @@ interface AuthContextType {
   profile: Profile | null;
   isAdmin: boolean;
   loading: boolean;
-  signUp: (phone: string, password: string, name?: string, referralCode?: string, email?: string) => Promise<{ error: Error | null }>;
+  signUp: (phone: string, password: string, name?: string, referralCode?: string, email?: string) => Promise<{ error: Error | null; userId?: string }>;
   signIn: (identifier: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
