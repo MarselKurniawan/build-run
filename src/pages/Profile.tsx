@@ -96,7 +96,7 @@ const Profile = () => {
     { icon: ClipboardList, label: "Catatan Penerbangan", action: () => navigate("/account") },
     { icon: Trophy, label: "Tantangan", action: () => navigate("/account") },
     { icon: Volume2, label: "Pemberitahuan Pesan", action: () => toast({ title: "Belum ada pesan", description: "Tidak ada pemberitahuan baru" }) },
-    { icon: Gift, label: "Keberuntungan", action: () => setSpinOpen(true) },
+    { icon: Gift, label: "Roda Putar", action: () => setSpinOpen(true) },
     { icon: CalendarCheck, label: "Check-in", action: () => setCheckinOpen(true) },
   ];
 
