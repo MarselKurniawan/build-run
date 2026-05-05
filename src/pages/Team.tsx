@@ -181,13 +181,14 @@ const Team = () => {
           <div className="grid grid-cols-2 gap-3 text-center">
             <div>
               <p className="text-lg font-bold text-primary">{totalReferrals} <span className="text-xs font-normal text-muted-foreground">orang</span></p>
-              <p className="text-[10px] text-muted-foreground">Total undangan</p>
+              <p className="text-[10px] text-muted-foreground">Sudah beli produk</p>
             </div>
             <div>
-              <p className="text-lg font-bold text-primary">{team.levelA.length} <span className="text-xs font-normal text-muted-foreground">orang</span></p>
-              <p className="text-[10px] text-muted-foreground">Undangan langsung</p>
+              <p className="text-lg font-bold text-primary">{purchasedLevelA.length} <span className="text-xs font-normal text-muted-foreground">orang</span></p>
+              <p className="text-[10px] text-muted-foreground">Langsung (Level A)</p>
             </div>
           </div>
+          <p className="text-[10px] text-center text-muted-foreground mt-2">Hanya member yang sudah membeli produk dihitung untuk naik VIP.</p>
         </CardContent>
       </Card>
 
