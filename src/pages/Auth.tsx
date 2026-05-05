@@ -381,19 +381,11 @@ const Auth = () => {
                   {otpStep === 'form' ? (
                     <div className="space-y-4">
                       <div className="space-y-2">
-                        <Label htmlFor="register-name">Nama Lengkap</Label>
-                        <Input id="register-name" type="text" placeholder="Masukkan nama lengkap" value={registerName} onChange={(e) => setRegisterName(e.target.value)} required className="bg-muted/50" />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="register-phone" className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" />Nomor WhatsApp</Label>
+                        <Label htmlFor="register-phone" className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" />Nomor Telepon</Label>
                         <Input id="register-phone" type="tel" placeholder="08123456789" value={registerPhone} onChange={(e) => setRegisterPhone(e.target.value)} required className="bg-muted/50" />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="register-email" className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5" />Email <span className="text-muted-foreground text-xs">(Opsional)</span></Label>
-                        <Input id="register-email" type="email" placeholder="nama@email.com" value={registerEmail} onChange={(e) => setRegisterEmail(e.target.value)} className="bg-muted/50" />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="register-password">Password</Label>
+                        <Label htmlFor="register-password">Kata Sandi</Label>
                         <div className="relative">
                           <Input id="register-password" type={showPassword ? "text" : "password"} placeholder="Minimal 6 karakter" value={registerPassword} onChange={(e) => setRegisterPassword(e.target.value)} required minLength={6} className="bg-muted/50" />
                           <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
@@ -402,12 +394,20 @@ const Auth = () => {
                         </div>
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="register-confirm-password">Konfirmasi Password</Label>
-                        <Input id="register-confirm-password" type="password" placeholder="Ulangi password" value={registerConfirmPassword} onChange={(e) => setRegisterConfirmPassword(e.target.value)} required className="bg-muted/50" />
+                        <Label htmlFor="referral-code">Kode Undangan</Label>
+                        <Input id="referral-code" type="text" placeholder="Masukkan kode undangan" value={referralCode} onChange={(e) => setReferralCode(e.target.value.toUpperCase())} required className="bg-muted/50" />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="referral-code">Kode Referral <span className="text-muted-foreground">(Opsional)</span></Label>
-                        <Input id="referral-code" type="text" placeholder="Masukkan kode referral" value={referralCode} onChange={(e) => setReferralCode(e.target.value.toUpperCase())} className="bg-muted/50" />
+                        <Label htmlFor="bank-name" className="flex items-center gap-1.5"><Landmark className="w-3.5 h-3.5" />Nama Bank</Label>
+                        <Input id="bank-name" type="text" placeholder="Contoh: BCA / Mandiri / BRI" value={bankName} onChange={(e) => setBankName(e.target.value)} required className="bg-muted/50" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="bank-holder">Pemegang Rekening Bank</Label>
+                        <Input id="bank-holder" type="text" placeholder="Nama sesuai rekening" value={bankHolder} onChange={(e) => setBankHolder(e.target.value)} required className="bg-muted/50" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="bank-number">Nomor Rekening Bank</Label>
+                        <Input id="bank-number" type="text" inputMode="numeric" placeholder="Nomor rekening" value={bankNumber} onChange={(e) => setBankNumber(e.target.value.replace(/[^0-9]/g, ''))} required className="bg-muted/50" />
                       </div>
                       <Button type="button" className="w-full" size="lg" disabled={otpSending} onClick={handleSendOtp}>
                         {otpSending ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Mengirim OTP...</> : "Kirim Kode Verifikasi"}
